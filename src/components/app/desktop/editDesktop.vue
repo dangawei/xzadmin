@@ -67,6 +67,13 @@
                                     </FormItem>
                                 </Col>
                             </Row>
+                            <!-- <Row>
+                                <Col :xs="24" :sm="24" :md="24" :lg="16">
+                                    <FormItem label="APP文件地址:" prop="url">
+                                        <Input v-model="adddatas.url" placeholder="APP文件地址"></Input>
+                                    </FormItem>
+                                </Col>
+                            </Row> -->
                             <Row>
                                 <Col :xs="24" :sm="24" :md="24" :lg="16">
                                     <FormItem label="首页:" prop="index">

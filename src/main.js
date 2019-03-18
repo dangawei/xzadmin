@@ -12,14 +12,9 @@ import api from './api/index.js'
 import network from './api/network.js'
 import webapi from './api/webapi.js'
 import http from './api/api.js'
-import common from './api/common.js'
-import filter from './filter/date.js' //筛选器
-import '../static/UEditor/ueditor.config.js'
-import '../static/UEditor/ueditor.all.js'
-import '../static/UEditor/lang/zh-cn/zh-cn'
-import '../static/ueditor/kityformula-plugin/addKityFormulaDialog.js'
-import '../static/ueditor/kityformula-plugin/getKfContent.js'
-import '../static/ueditor/kityformula-plugin/defaultFilterFix.js'
+import common from './script/common.js'
+import * as filter from './filter/filter.js' //筛选器
+
 
 Vue.config.productionTip = false
 
@@ -32,7 +27,7 @@ router.beforeEach((to, from , next) => {
 	// console.log(to.matched);
     /*判断下一个路由是否需要登录，对其进行验证*/
     if(to.matched.some(record => record.meta.requireAuth)) {
-        let hasAuth=webapi.get("account") //判断用户是否登录
+        let hasAuth=webapi.getlocal("account") //判断用户是否登录
         if(Boolean(hasAuth)) {
             /*如果已经登录，可以进入页面*/
             // if (from.name==='topicPreview') {
@@ -46,6 +41,10 @@ router.beforeEach((to, from , next) => {
     }else{
      	next()
     }
+})
+
+Object.keys(filter).forEach(key=>{
+    Vue.filter(key,filter[key])
 })
 
 Vue.prototype.$api = api

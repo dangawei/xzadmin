@@ -28,6 +28,7 @@ const state={
     search_type_array:[],//搜索题型数据
     search_chapter_array:[],//搜索版本章节数据
     search_chapter:[],//搜索章节选中数据
+    search_user:[],//搜索章节选中录题人
     // 公共库数据
     pubsearch_type_array:[],//搜索题型数据
     pubsearch_course:[],//搜索学科选中id
@@ -37,7 +38,7 @@ const state={
     backsearch_course:[],//搜索学科选中id
     backsearch_type:'',//搜索题型选中数据
     // 正式题库数据
-    usesearch_source:1,//搜索题库来源
+    usesearch_source:2,//搜索题库来源
     usesearch_state:0,//搜索状态
     usesearch_type_array:[],//搜索题型数据
     usesearch_course:[],//搜索学科选中id
@@ -76,6 +77,9 @@ const mutations={
     },
     chapterSearch(state,data){
         state.search_chapter=data;
+    },
+    userSearch(state,data){
+        state.search_user=data;
     },
     // 公共库
     pubtypeArraySearch(state,data){
@@ -205,6 +209,9 @@ const actions={
     // 校本库选中章节
     chapterSearch({commit},data){
         commit('chapterSearch',data);
+    },
+    userSearch({commit},data){
+        commit('userSearch',data);
     },
     // 公共库选中题型
     pubcourseSearch({commit},data){

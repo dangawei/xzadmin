@@ -242,12 +242,12 @@ export default {
             })
         }
     },
-    beforeRouteLeave(to,form,next){
-        form.meta.loading = false;
-        next(vm=>{
-            vm.questionShow=false;
-        });
-    },
+    // beforeRouteLeave(to,form,next){
+    //     form.meta.loading = false;
+    //     next(vm=>{
+    //         vm.questionShow=false;
+    //     });
+    // },
     watch:{
     },
     created() {
@@ -267,10 +267,11 @@ export default {
             this.formItem.analysis=this.$store.state.usetest.analysis
 
             this.formItem.chapter=this.$store.state.usetest.chapter
-            this.formItem.questionId=this.$store.state.usetest.questionId
             this.formItem.course=this.$store.state.usetest.course
             this.formItem.type=this.$store.state.usetest.type
             this.formItem.id=this.$store.state.usetest.id
+            this.formItem.uid=this.$store.state.usetest.uid
+            this.formItem.difficulty=this.$store.state.usetest.difficulty
             this.formItem.scope=this.$store.state.usetest.scope
 
             if (this.$store.state.usetest.knowledgeList.length!=0) {

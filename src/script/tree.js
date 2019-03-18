@@ -10,17 +10,12 @@ function treeConversion(tree,map){
         // console.log(map);
         // 遍历tree
         tree.forEach((item)=>{
-            //解构赋值
-            // let {
-            //     id:value,
-            //     name:label,
-            //     chapters:children
-            // }=item;
             // 读取 map 的键值映射
             const title = item[ map.title ]
             const id = item[ map.id ]
-            let expand = true
+            // let expand = false
             let children = item[ map.children ] || [];
+            let pid = item[ map.pid ] || 0;
 
             // 如果有子节点，递归
             if (children) {
@@ -29,8 +24,8 @@ function treeConversion(tree,map){
 
             result.push({
                 id,
+                pid,
                 title,
-                expand,
                 children
             })
         })

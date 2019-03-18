@@ -28,14 +28,19 @@
                     </Col>
                     <Col :xs="24" :sm="24" :md="4" :lg="4">
                         <FormItem label="难易度:" prop="difficulty">
-                            <get-difficulty @exportData="exportDifficultyData"></get-difficulty>
+                            <get-difficulty @exportData="exportDifficultyData" :importData="3"></get-difficulty>
                         </FormItem>
                     </Col>
                 </Row>
                 <Row class="search-row">
-                    <Col :xs="24" :sm="24" :md="{ span: 20, offset: 1 }" :lg="{ span: 20, offset: 1 }">
+                    <Col :xs="24" :sm="24" :md="{ span: 12, offset: 1 }" :lg="{ span: 12, offset: 1 }">
                         <FormItem label="教辅:" prop="assistants">
                             <Input v-model="formValidate.assistants" placeholder="教辅" @input="assistantsInput"></Input>
+                        </FormItem>
+                    </Col>
+                    <Col :xs="24" :sm="24" :md="{ span: 8 }" :lg="{ span: 8 }">
+                        <FormItem label="题号:" prop="questionId">
+                            <Input v-model="formValidate.questionId" placeholder="题号" @input="questionIdInput"></Input>
                         </FormItem>
                     </Col>
                 </Row>
@@ -74,17 +79,10 @@
                             </FormItem>
                         </Col>
                     </Row>
-                    <Row class="search-row">
+                    <Row class="search-row" v-show="selShow">
                         <Col :xs="24" :sm="24" :md="{ span: 20, offset: 1 }" :lg="{ span: 20, offset: 1 }">
-                            <FormItem label="选项:" prop="selection">
+                            <FormItem label="选项或小题:" prop="selection">
                                 <vue-ueditor-wrap v-model="formValidate.selection" :config="myConfig" ref="ueSelect" @ready="readySelect"></vue-ueditor-wrap>
-                            </FormItem>
-                        </Col>
-                    </Row>
-                    <Row class="search-row">
-                        <Col :xs="24" :sm="24" :md="{ span: 20, offset: 1 }" :lg="{ span: 20, offset: 1 }">
-                            <FormItem label="小题:" prop="item">
-                                <vue-ueditor-wrap v-model="formValidate.item" :config="myConfig" ref="ueItem" @ready="readyItem"></vue-ueditor-wrap>
                             </FormItem>
                         </Col>
                     </Row>
@@ -109,6 +107,9 @@
                 </div>
                 <div class="" v-if="!linkBool">
                     <Row class="search-row">
+                        <Col :xs="24" :sm="24" :md="{ span: 20, offset: 3 }" :lg="{ span: 20, offset: 3 }">
+                            <p style="color:red;">*小提示：此种方式不能录制题干分离的题型，例如：现代文阅读，完型填空等，此种形式的题型</p>
+                        </Col>
                         <Col :xs="24" :sm="24" :md="{ span: 20, offset: 1 }" :lg="{ span: 20, offset: 1 }">
                             <FormItem label="连接:" prop="linkUrl">
                                 <!-- <Ueditor :writeMsg="formValidate.analysis"  :id="ueditorAnalysis" :config="myConfig"  ref="ueAnalysis"></Ueditor> -->
@@ -121,6 +122,12 @@
                     </div>
                 </div>
             </Form>
+        </div>
+        <div class="" v-if="spinShow">
+            <Spin fix size="large">
+                <Icon type="ios-loading" size=18 class="demo-spin-icon-load"></Icon>
+                <h5>解析中...</h5>
+            </Spin>
         </div>
     </div>
 </template>
@@ -136,8 +143,7 @@
     import getChapter from '@/components/pub/getChapter.vue'
     import getKnowledge from '@/components/pub/getKnowledge.vue'
     import getDifficulty from '@/components/pub/getDifficulty.vue'
-    import Ueditor from '@/components/pub/Ueditor.vue';
-    import VueUeditorWrap from 'vue-ueditor-wrap'
+    import VueUeditorWrap from '@/components/pub/vueUeditroWrap.vue';
 
     import {mapGetters} from 'vuex';
 
@@ -152,7 +158,6 @@
             getChapter,
             getKnowledge,
             getDifficulty,
-            Ueditor,
             VueUeditorWrap,
             enterSwitch,
         },
@@ -166,8 +171,8 @@
                     textbook:'',
                     textbookVersion:'',
                     type:'',
-                    chapterArray:'',
-                    knowledge:'',
+                    chapterArray:[],
+                    knowledge:[],
                     difficulty:'',
                     source:'',
                     assistants:'',
@@ -175,13 +180,16 @@
                     selection:'',
                     answer:'',
                     analysis:'',
-                    linkUrl:''
+                    linkUrl:'',
                 },
+                selData:["单选题","多选题","选择题组","现代文阅读","文言文阅读","诗歌阅读","完形填空","阅读理解","阅读理解七选五"],
+                selShow:true,
                 ueContent:'',
                 ueSelection:'',
                 ueAnalysis:'',
                 ueAnswer:'',
                 ueItem:'',
+                ueLinkUrl:'',
                 ue:'',
                 // 富文本编辑器配置
                 myConfig: {
@@ -210,31 +218,22 @@
                         // { validator: vers,message:'版本格式书写错误' trigger: "blur" }
                         // { type:'string',pattern: /^\d{1,2}(\.\d{1,2}){2,3}$/,message:'版本格式书写错误', trigger: "blur" }
                     ],
-                    textbook: [
-                        { required: true, message: '请选择教材'}
-                    ],
+                    // textbook: [
+                    //     { required: true, message: '请选择教材'}
+                    // ],
                     textbookVersion:[
                         {required:true, message: '请选择教材版本'}
                     ],
                     type:[
                         {required:true, message: '请选择题型'}
                     ],
-                    // chapterArray:[
-                    //     {required:true, message: '请选择章节'}
+                    // difficulty:[
+                    //     {required:true, message: '请选择难易度'}
                     // ],
-                    // knowledge:[
-                    //     {required:true, message: '请选择知识点'}
-                    // ],
-                    difficulty:[
-                        {required:true, message: '请选择难易度'}
-                    ],
-                    // source:[
-                    //     {required:true, message: '请输入来源',trigger:'blur'}
-                    // ],
-                    // assistants:[
-                    //     {required:true, message: '请输入教辅',trigger:'blur'}
-                    // ],
-                }
+                },
+                // 链接地址
+                linkurl:'',
+                spinShow:false,
             }
         },
         computed:{
@@ -243,23 +242,25 @@
             }
         },
         watch:{
-            // 'formValidate.content':function(val){
-            //     console.log(val);
-            //     console.log(this.ueContent.getContent())
-            //     this.$store.dispatch("contentEnter",val)
-            // },
-            // 'formValidate.selection':function(val){
-            //     this.$store.dispatch("selectionEnter",val)
-            // },
-            // 'formValidate.analysis':function(val){
-            //     this.$store.dispatch("analysisEnter",val)
-            // },
-            // 'formValidate.answer':function(val){
-            //     this.$store.dispatch("answerEnter",val)
-            // },
+            'formValidate.content':function(val){
+                this.$store.dispatch("contentEnter",val)
+            },
+            'formValidate.selection':function(val){
+                this.$store.dispatch("selectionEnter",val)
+            },
+            'formValidate.analysis':function(val){
+                this.$store.dispatch("analysisEnter",val)
+            },
+            'formValidate.answer':function(val){
+                this.$store.dispatch("answerEnter",val)
+            },
+            'formValidate.linkUrl':function(val){
+                var value=this.ueLinkUrl.getContentTxt();
+                this.linkurl=value;
+            },
         },
         created(){
-            // this.formValidate.course=this.$store.state.entertest.course;
+
         },
         mounted(){
             this.formValidate.course=this.$store.state.entertest.course;//科目
@@ -267,8 +268,12 @@
             this.formValidate.textbook=this.$store.state.entertest.textbook;//教材
             this.formValidate.textbookVersion=this.$store.state.entertest.textbookVersion;//教材版本
             this.formValidate.type=this.$store.state.entertest.type;//题型
-            this.formValidate.chapterArray=this.$store.state.entertest.chapterArray;//章节id
-            this.formValidate.knowledge=this.$store.state.entertest.knowledge;//知识点
+            // console.log(this.$store.state.entertest.chapterText)
+            // console.log(this.$store.state.entertest.chapterArray)
+            this.formValidate.chapterArray=this.$store.state.entertest.chapterText;//章节
+            if (this.$store.state.entertest.knowledge) {
+                this.formValidate.knowledge=this.$store.state.entertest.knowledge.split(',') //知识点
+            }
             this.formValidate.difficulty=this.$store.state.entertest.difficulty;//难度
             this.formValidate.source=this.$store.state.entertest.source;//来源
             this.formValidate.assistants=this.$store.state.entertest.assistants;//教辅
@@ -276,6 +281,7 @@
             this.formValidate.selection=this.$store.state.entertest.selection;//选项
             this.formValidate.answer=this.$store.state.entertest.answer;//答案
             this.formValidate.analysis=this.$store.state.entertest.analysis;//解析
+            this.formValidate.questionId=this.$store.state.entertest.questionId;//题号
         },
         methods:{
             exportCourseData(e){
@@ -291,13 +297,21 @@
                 this.formValidate.textbookVersion=e;
             },
             exportTypeData(e){
-                this.formValidate.type=e;
+                this.formValidate.type=e.value;
+                if (this.selData.indexOf(e.label)!=-1) {
+                    this.selShow=true
+                }else{
+                    this.selShow=false
+                }
             },
             exportChapterData(e){
-                this.formValidate.chapterArray=e[e.length-1];
+                this.formValidate.chapterArray=e;
             },
             exportKnowledgeData(e){
-                this.formValidate.knowledge=e;
+                var kns=e.split(',');
+                // console.log(kns);
+                // console.log(e);
+                this.formValidate.knowledge=kns;
             },
             exportDifficultyData(e){
                 this.formValidate.difficulty=e;
@@ -308,43 +322,99 @@
             assistantsInput(val){
                 this.$store.dispatch("assistantsEnter",this.formValidate.assistants)
             },
+            questionIdInput(val){
+                this.$store.dispatch("questionIdEnter",this.formValidate.questionId)
+            },
             sure(name){
                 var _this=this;
-                new Promise((resolve,reject)=>{
-                    if(this.linkBool){
-                        _this.$store.dispatch("contentEnter",this.ueContent.getContent())
-                        _this.$store.dispatch("selectionEnter",this.ueSelect.getContent())
-                        _this.$store.dispatch("itemEnter",this.ueItem.getContent())
-                        _this.$store.dispatch("analysisEnter",this.ueAnalysis.getContent())
-                        _this.$store.dispatch("answerEnter",this.ueAnswer.getContent())
+                this.$refs[name].validate((valid) => {
+                    if(valid){
+                        this.spinShow=true;
+                        var data={};
+                        if(this.linkurl){
+                            data.webUrl=this.linkurl
+                        }
+
+                        if(this.formValidate.content){
+                            data.content=this.formValidate.content
+                        }
+                        if(this.formValidate.selection){
+                            data.selection=this.formValidate.selection
+                        }
+                        if(this.formValidate.answer){
+                            data.answer=this.formValidate.answer
+                            // data.answer=this.ueAnswer.getContentTxt()
+                        }
+                        if(this.formValidate.analysis){
+                            data.analysis=this.formValidate.analysis
+                        }
+
+                        if(this.formValidate.grade){
+                            data.gradeId=this.formValidate.grade
+                        }
+                        if(this.formValidate.course){
+                            data.courseId=this.formValidate.course
+                        }
+                        if(this.formValidate.textbookVersion){
+                            data.editionId=this.formValidate.textbookVersion
+                        }
+                        if(this.formValidate.textbook){
+                            data.textbookId=this.formValidate.textbook
+                        }
+                        if(this.formValidate.type){
+                            data.typeId=this.formValidate.type
+                        }
+                        if(this.formValidate.difficulty){
+                            data.difficultyId=this.formValidate.difficulty
+                        }
+                        if(this.formValidate.chapterArray){
+                            data.chapters=this.formValidate.chapterArray
+                        }
+                        if(this.formValidate.knowledge){
+                            data.knowledges=this.formValidate.knowledge
+                        }
+                        if(this.formValidate.assistants){
+                            data.bookName=this.formValidate.assistants
+                        }
+                        if(this.formValidate.questionId){
+                            data.questionId=this.formValidate.questionId
+                        }
+                        if(this.formValidate.difficulty){
+                            data.difficultyId=this.formValidate.difficulty
+                        }
+                        if(this.formValidate.source){
+                            data.source=this.formValidate.source
+                        }
+                        this.$api.post("/admin/api/input/subject", data, res => {
+                            if(res.code==200){
+                                _this.$webapi.save('importTestDatas',JSON.stringify(res.data));
+                                if(res.data.length==0){
+                                    _this.$Message.error("解析失败,请重新提交!")
+                                }else{
+                                    _this.spinShow=false;
+                                    _this.$Message.success("解析成功!")
+                                    this.$store.dispatch("contentEnter",'')
+                                    this.$store.dispatch("selectionEnter",'')
+                                    this.$store.dispatch("analysisEnter",'')
+                                    this.$store.dispatch("answerEnter",'')
+                                    this.linkurl=''
+                                    _this.$router.push({
+                                        path:"/enter/test/list",
+                                        query:{
+                                            id:res.data[0]
+                                        }
+                                    })
+                                }
+                            }else{
+                                _this.spinShow=false;
+                                _this.$netcode.getApiCode(res)
+                            }
+                        })
                     }else{
-                        _this.$store.dispatch("LinkEnter",this.ueLinkUrl.getContent())
+                        _this.$Message.error('请输入完整信息!')
                     }
-                    resolve();
-                }).then(()=>{
-                    _this.$router.push({
-                        path:"/enter/test/preview"
-                    })
                 })
-                // this.$refs[name].validate((valid) => {
-                //     if(valid){
-                //         _this.$router.push({
-                //             path:"/enter/test/preview"
-                //         })
-                //     }else{
-                //         _this.$Message.error('请输入完整信息!')
-                //     }
-                // })
-                // _this.$router.push({
-                //     path:"/enter/test/preview"
-                // })
             },
-            // sure(){
-            //     this.$store.dispatch("LinkEnter",this.ueLinkUrl.getContent())
-            //     this.$router.push({
-            //         path:"/analysis/enter/preview"
-            //     })
-            // },
             readyContent(ue){
                 this.ueContent=ue;
             },
@@ -374,5 +444,8 @@
     }
     .ivu-form-item{
         margin-bottom: 1px;
+    }
+    .ivu-spin-fix{
+        z-index: 1000;
     }
 </style>

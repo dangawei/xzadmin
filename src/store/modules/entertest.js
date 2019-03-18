@@ -8,11 +8,13 @@ import tree from '../../script/tree.js'
 
 export default({
     state:{
+        enter_datas:{},//所有数据
         datas:[],//根据年级id获取学科 教材 版本数据
         textVersionDatas:[],//根据学科id获取教材版本数据
         typeArray:[],//根据学科id获取题型数据
         textDatas:[],//根据教材版本id获取教材数据
         chapterDatas:[],//根据教材获取章节数据
+        chapterNewDatas:[],//根据教材获取章节数据
         knowledgeDatas:[],//根据学科id获取获取知识点数据
         difficulty_datas:[],//根获取难度数据
 
@@ -27,13 +29,14 @@ export default({
         textbookVersion:'',//教材版本
         textbookVersionText:'',//教材版本
         type:'',//题型
-        chapterText:'',//章节id
-        chapterArray:[],//选择章节数据
+        chapterText:[],//章节文字
+        chapterArray:[],//选择章节数据id
         knowledge:'',//知识点
         difficulty:'',//难度
         difficultyText:'',//难度
         source:'',//来源
         assistants:'',//教辅
+        questionId:'',//题号
         content:'',//题干
         contentText:'',//题干
         selection:'',//选项
@@ -45,7 +48,29 @@ export default({
         analysisText:'',//解析
         knowledgeDisabled:true,
         handBool:true,
-        linkBool:true//是否链接导入
+        linkBool:true,//是否链接导入
+        // 题目编辑数据
+        question:'',//题目
+        selectionKey:'',//正确答案
+        gradeSel:0,
+        courseSel:0,
+        textbookSel:0,
+        textbookVersionSel:0,
+        difficultySel:0,
+        assistantsSel:0,
+        chapterSel:0,
+        typeSel:0,
+        knowledgeSel:0,
+        sourceSel:0,
+        questionSel:0,
+        contentSel:0,
+        selectionSel:0,
+        selectionKeySel:0,
+        answerSel:0,
+        analysisSel:0,
+        seletionDatas:'',//选项修改数据
+        // removeDatas:'',//删除编辑数据数据
+        selShow:true,//判断是否显示小题
     },
     getters:{
         doneDatas : function(state){
@@ -68,7 +93,7 @@ export default({
         textbookVersionText : state => state.textbookVersionText,
         type : state => state.type,
         typeArray : state => state.typeArray,
-        chapterText : state => state.chapterText,
+        chapterText :state => state.chapterText,
         chapterArray : state => state.chapterArray,
         knowledge : state => state.knowledge,
         knowledgeText : state => state.knowledgeText,
@@ -92,6 +117,9 @@ export default({
         linkBool : state => state.linkBool,
     },
     mutations:{
+        enterDatasEnter(state,data){
+            state.enter_datas=data;
+        },
         datasEnter(state,data){
             state.course='';
             state.textbook='';
@@ -102,6 +130,9 @@ export default({
             state.datas=data;
         },
         // 进入页面获取难度数据
+        courseDataEnter(state,data){
+            state.datas=data;
+        },
         difficultyDatasEnter(state,data){
             state.difficulty_datas=data;
         },
@@ -116,6 +147,16 @@ export default({
         },
         typeArrayEnter(state,data){
             state.typeArray=data;
+        },
+        gradeIdEnter(state,data){
+            state.grade=data
+        },
+        gradeEnter(state,data){
+            state.grade=data.value
+            state.gradeText=data.label
+        },
+        courseIdEnter(state,data){
+            state.course=data
         },
         courseEnter(state,data){
             if (data==undefined) {
@@ -134,14 +175,33 @@ export default({
             state.textDatas=data;
         },
         textbookVersionEnter(state,data){
-            console.log(data);
             state.textbookVersionText=data.name
             state.textbookVersion=data.id
+        },
+        textbookVersionIdEnter(state,data){
+            state.textbookVersion=data
+        },
+        textbookVersionDatasEnter(state,data){
+            state.textVersionDatas=data
+        },
+        textbookEnter(state,data){
+            state.textbook=data.id
+            state.textbookText=data.name
+        },
+        textbookDataEnter(state,data){
+            state.textDatas=data
+        },
+        textbookIdEnter(state,data){
+            state.textbook=data
         },
         chapterDatasEnter(state,data){
             state.chapterArray=[];
             state.chapterDatas=data;
         },
+        chapterDatasEnters(state,data){
+            state.chapterArray=[];
+            state.chapterNewDatas=data;
+        },//新题录入章节数据
         knowledgeDatasEnter(state,data){
             state.knowledge='';
             state.knowledgeDatas=data;
@@ -150,13 +210,8 @@ export default({
         knowledgeDisabledEnter(state){
             state.knowledgeDisabled=true;
         },
-        gradeEnter(state,data){
-            state.grade=data.value
-            state.gradeText=data.label
-        },
-        textbookEnter(state,data){
-            state.textbook=data.id
-            state.textbookText=data.name
+        typeIdEnter(state,data){
+            state.type=data
         },
         typeEnter(state,data){
             state.type=data.value
@@ -168,20 +223,29 @@ export default({
         },
         chapterArrayEnter(state,data){
             state.chapterArray=data
-        },
-        knowledgeEnter(state,data){
-            state.knowledge=data
+            if(state.chapterArray.length==0){
+                state.chapterText=[]
+            }
         },
         // 选中难度,存储选中值
+        difficultyIdEnter(state,data){
+            state.difficulty=data
+        },
         difficultyEnter(state,data){
             state.difficulty=data.id
             state.difficultyText=data.name
+        },
+        knowledgeEnter(state,data){
+            state.knowledge=data
         },
         sourceEnter(state,data){
             state.source=data
         },
         assistantsEnter(state,data){
             state.assistants=data
+        },
+        questionIdEnter(state,data){
+            state.questionId=data
         },
         contentEnter(state,data){
             state.content=data
@@ -210,12 +274,100 @@ export default({
             // console.log(data);
             state.link=data
         },
+        // 题目编辑
+        questionEnter(state,data){
+            // console.log(data);
+            state.question=data
+        },
+        selectionKeyEnter(state,data){
+            // console.log(data);
+            state.selectionKey=data
+        },
+        editDataEnter(state,data){
+            state.gradeSel=0,
+            state.courseSel=0,
+            state.textbookSel=0,
+            state.textbookVersionSel=0,
+            state.difficultySel=0,
+            state.assistantsSel=0,
+            state.chapterSel=0,
+            state.typeSel=0,
+            state.knowledgeSel=0,
+            state.sourceSel=0,
+            state.questionSel=0,
+            state.contentSel=0,
+            state.selectionSel=0,
+            state.selectionKeySel=0,
+            state.answerSel=0,
+            state.analysisSel=0
+        },
+        gradeSelEnter(state,data){
+            state.gradeSel=1
+        },
+        courseSelEnter(state,data){
+            state.courseSel=1
+        },
+        textbookSelEnter(state,data){
+            state.textbookSel=1
+        },
+        textbookVersionSelEnter(state,data){
+            state.textbookVersionSel=1
+        },
+        difficultySelEnter(state,data){
+            state.difficultySel=1
+        },
+        assistantsSelEnter(state,data){
+            state.assistantsSel=1
+        },
+        chapterSelEnter(state,data){
+            state.chapterSel=1
+        },
+        typeSelEnter(state,data){
+            state.typeSel=1
+        },
+        knowledgeSelEnter(state,data){
+            state.knowledgeSel=1
+        },
+        sourceSelEnter(state,data){
+            state.sourceSel=1
+        },
+        questionSelEnter(state,data){
+            state.questionSel=1
+        },
+        contentSelEnter(state,data){
+            state.contentSel=1
+        },
+        selectionSelEnter(state,data){
+            state.selectionSel=1
+        },
+        selectionKeySelEnter(state,data){
+            state.selectionKeySel=1
+        },
+        answerSelEnter(state,data){
+            state.answerSel=1
+        },
+        analysisSelEnter(state,data){
+            state.analysisSel=1
+        },
+        seletionDatasSelEnter(state,data){
+            state.seletionDatas=data
+        },
+        removeDatas(state,data){
+            state.content='';//题干
+            state.selection='';//选项
+            state.answer='';//答案
+            state.analysis='';//解析
+        },
+        // 判断是否显示小题
+        selShowEnter(state,data){
+            state.selShow=data;
+        },
     },
     actions:{
         courseEnter ({ commit },data) {
             commit('courseEnter',data)
         },
-        // 进入页面获取年级数据
+        // 进入页面获取学科数据
         gradeEnter ({ commit },data) {
             const parmas={
                 id:data.value
@@ -223,8 +375,26 @@ export default({
             http.get('/admin/api/grade/course/list',parmas).then((res)=>{
                 if (res.code === 200){
                     // _this.alldata = res.data
+                    webapi.save("enterCourse",JSON.stringify(res.data));
                     commit('datasEnter',res.data)
                     commit('gradeEnter',data)
+                }else{
+                    network.getApiCode(res)
+                }
+            })
+
+        },
+        // 进入页面获取学科数据
+        gradeIdEnter ({ commit },data) {
+            const parmas={
+                id:data
+            }
+            http.get('/admin/api/grade/course/list',parmas).then((res)=>{
+                if (res.code === 200){
+                    // _this.alldata = res.data
+                    webapi.save("enterCourse",JSON.stringify(res.data));
+                    commit('courseDataEnter',res.data)
+                    commit('gradeIdEnter',data)
                 }else{
                     network.getApiCode(res)
                 }
@@ -235,6 +405,7 @@ export default({
         difficultyDatasEnter ({ commit },data) {
             http.get('/admin/api/difficulty/list',null).then((res)=>{
                 if (res.code === 200){
+                    webapi.save("enterDifficulty",JSON.stringify(res.data));
                     commit('difficultyDatasEnter',res.data)
                 }else{
                     network.getApiCode(res)
@@ -249,6 +420,7 @@ export default({
             http.get('/admin/api/type/list',parmas).then((res)=>{
                 if (res.code === 200){
                     // _this.alldata = res.data
+                    webapi.save("enterType",JSON.stringify(res.data));
                     commit('typeArrayEnter',res.data)
                 }else{
                     network.getApiCode(res)
@@ -293,7 +465,8 @@ export default({
                 commit('chapterDatasEnter',data)
             }else{
                 const parmas={
-                    id:data
+                    id:data,
+                    state:1
                 }
                 const map={
                     value:'id',
@@ -302,8 +475,44 @@ export default({
                 }
                 http.get('/admin/api/chapter/list',parmas).then((res)=>{
                     if (res.code === 200){
-                        var convert=common.convertTree(res.data,map)
-                        commit('chapterDatasEnter',convert)
+                        if(res.data){
+                            var convert=common.convertTree(res.data,map)
+                            webapi.save("enterChapters",JSON.stringify(convert));
+                            commit('chapterDatasEnter',convert)
+                        }else{
+                            var arr=[]
+                            commit('chapterDatasEnter',arr)
+                        }
+                    }else{
+                        network.getApiCode(res)
+                    }
+                })
+            }
+        },
+        chapterDatasEnters ({ commit },data) {
+            if (data==undefined) {
+                data=[];
+                commit('chapterDatasEnters',data)
+            }else{
+                const parmas={
+                    id:data,
+                    state:1
+                }
+                const map={
+                    id:'id',
+                    pid:'pid',
+                    title:'name',
+                    children:'chapters',
+                }
+                http.get('/admin/api/chapter/list',parmas).then((res)=>{
+                    if (res.code === 200){
+                        if(res.data){
+                            var convert=tree.treeConversion(res.data,map)
+                            commit('chapterDatasEnters',convert)
+                        }else{
+                            var arr=[]
+                            commit('chapterDatasEnters',arr)
+                        }
                     }else{
                         network.getApiCode(res)
                     }
@@ -356,6 +565,9 @@ export default({
         assistantsEnter ({ commit },data) {
             commit('assistantsEnter',data)
         },
+        questionIdEnter ({ commit },data) {
+            commit('questionIdEnter',data)
+        },
         contentEnter ({ commit },data) {
             commit('contentEnter',data)
         },
@@ -379,6 +591,16 @@ export default({
         },
         LinkEnter ({ commit },data) {
             commit('LinkEnter',data)
+        },
+        // 题目编辑
+        questionEnter ({ commit },data) {
+            commit('questionEnter',data)
+        },
+        selectionKeyEnter ({ commit },data) {
+            commit('selectionKeyEnter',data)
+        },
+        seletionDatasSelEnter ({ commit },data) {
+            commit('seletionDatasSelEnter',data)
         },
     }
 })

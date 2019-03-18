@@ -32,24 +32,21 @@ const state={
     uid:'',
     scope:'',
     knowledgeList:[],
+    difficulty:'',
     inputShow:''
 }
 
 const mutations={
     [types.usetest_data_datas](state,data){
         state.usetest_data_datas=data;
-        state.chapter=data.chapter;
-        state.questionId=data.questionId;
-        state.course=data.course;
-        state.type=data.type;
-        state.id=data.id;
-        if (data.uid) {
-            state.uid=data.uid;
-        }
-        if (data.knowledgeList) {
-            state.knowledgeList=data.knowledgeList;
-        }
-        state.scope=data.scope;
+        state.chapter=data.chapter || '';
+        state.course=data.course || '';
+        state.difficulty=data.difficulty || '' || '';
+        state.type=data.type || '';
+        state.id=data.id || '';
+        state.uid=data.uid || '';
+        state.knowledgeList=data.knowledgeList || [];
+        state.scope=data.scope || '';
     },
     [types.usetest_data_question](state,data){
         state.question=data;

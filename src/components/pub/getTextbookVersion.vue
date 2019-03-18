@@ -1,6 +1,6 @@
 <template>
   <div class="">
-    <Select v-model="valueId" :disabled="bool" clearable placeholder="请先选学科,再选择教材版本">
+    <Select v-model="valueId" :disabled="bool" clearable placeholder="请先选学科,再选择教材版本"  @on-change="change">
         <Option v-for="item in alldata" :value="item.id" :key="item.id" @click.native="getMoreParams(item)">{{item.name}}</Option>
     </Select>
   </div>
@@ -18,15 +18,45 @@ export default {
         }
     },
     computed:{
-        ...mapGetters({alldata:'textVersionDatas'}),
+        // ...mapGetters({alldata:'textVersionDatas'}),
+        alldata:{
+            get () {
+                if(this.importData){
+                    if(this.$webapi.get("enterTextVersion")){
+                        return JSON.parse(this.$webapi.get("enterTextVersion"))
+                    }else{
+                        return this.$store.state.entertest.textVersionDatas
+                    }
+                }else{
+                    return this.$store.state.entertest.textVersionDatas
+                }
+            },
+            set (val) {
+            }
+        },
         valueId:{
             get () {
-                if(this.$store.state.entertest.course){
-                    this.bool=false;
+                if(this.importData){
+                    if(this.$store.state.entertest.course){
+                        this.bool=false;
+                        var datas=JSON.parse(this.$webapi.get("enterTextVersion"))
+                        var obj={
+                            id:'id'
+                        }
+                        var num=this.$common.arrayIndex(datas,this.importData,obj)
+                        this.$webapi.save("enterTextbook",JSON.stringify(datas[num].list))
+                        this.$store.commit('textbookVersionIdEnter',this.importData)
+                        this.$store.commit('textbookDataEnter',datas[num].list)
+                        return this.importData
+                    }else{
+                        this.bool=true;
+                    }
                 }else{
-                    this.bool=true;
+                    if(this.$store.state.entertest.course){
+                        this.bool=false;
+                        return this.$store.state.entertest.textbookVersion
+                    }
                 }
-                return this.$store.state.entertest.textbookVersion
             },
             set (val) {
 
@@ -46,10 +76,16 @@ export default {
 
     },
     methods: {
+        change(e){
+            if(!e){
+                this.$store.dispatch('textbookVersionEnter','')
+                this.$emit('exportData','')
+            }
+        },
         getMoreParams(e){
-            this.$emit('exportData',e.id)
             this.$store.dispatch('textbookVersionEnter',e)
             this.$store.dispatch('textDatasEnter',e.list)
+            this.$emit('exportData',e.id)
         }
     }
 }

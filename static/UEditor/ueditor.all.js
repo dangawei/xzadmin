@@ -7356,14 +7356,13 @@ var fillCharReg = new RegExp(domUtils.fillChar, 'g');
             }
             //给文本或者inline节点套p标签
             if (me.options.enterTag == 'p') {
-
                 var child = this.body.firstChild, tmpNode;
                 if (!child || child.nodeType == 1 &&
                     (dtd.$cdata[child.tagName] || isCdataDiv(child) ||
                         domUtils.isCustomeNode(child)
                         )
                     && child === this.body.lastChild) {
-                    this.body.innerHTML = '<div>' + (browser.ie ? '&nbsp;' : '<br/>') + '</div>' + this.body.innerHTML;
+                    this.body.innerHTML = '<div>' + (browser.ie ? ' ' : '') + '</div>' + this.body.innerHTML;
 
                 } else {
                     var p = me.document.createElement('div');
@@ -10117,16 +10116,16 @@ UE.plugins['defaultfilter'] = function () {
                     case 'dd':
                         node.tagName = 'li';
                         break;
-                    case 'li':
-                        var className = node.getAttr('class');
-                        if (!className || !/list\-/.test(className)) {
-                            node.setAttr()
-                        }
-                        var tmpNodes = node.getNodesByTagName('ol ul');
-                        UE.utils.each(tmpNodes, function (n) {
-                            node.parentNode.insertAfter(n, node);
-                        });
-                        break;
+                    // case 'li':
+                    //     var className = node.getAttr('class');
+                    //     if (!className || !/list\-/.test(className)) {
+                    //         node.setAttr()
+                    //     }
+                    //     var tmpNodes = node.getNodesByTagName('ol ul');
+                    //     UE.utils.each(tmpNodes, function (n) {
+                    //         node.parentNode.insertAfter(n, node);
+                    //     });
+                    //     break;
                     case 'td':
                     case 'th':
                     case 'caption':
@@ -15146,24 +15145,24 @@ UE.plugins['list'] = function () {
     me.getOpt('disablePInList') === true && me.addOutputRule(function(root){
         utils.each(root.getNodesByTagName('li'),function(li){
             var newChildrens = [],index=0;
-            utils.each(li.children,function(n){
-                if(n.tagName == 'p'){
-                    var tmpNode;
-                    while(tmpNode = n.children.pop()) {
-                        newChildrens.splice(index,0,tmpNode);
-                        tmpNode.parentNode = li;
-                        lastNode = tmpNode;
-                    }
-                    tmpNode = newChildrens[newChildrens.length-1];
-                    if(!tmpNode || tmpNode.type != 'element' || tmpNode.tagName != 'br'){
-                        var br = UE.uNode.createElement('br');
-                        br.parentNode = li;
-                        newChildrens.push(br);
-                    }
-
-                    index = newChildrens.length;
-                }
-            });
+            // utils.each(li.children,function(n){
+            //     if(n.tagName == 'p'){
+            //         var tmpNode;
+            //         while(tmpNode = n.children.pop()) {
+            //             newChildrens.splice(index,0,tmpNode);
+            //             tmpNode.parentNode = li;
+            //             lastNode = tmpNode;
+            //         }
+            //         tmpNode = newChildrens[newChildrens.length-1];
+            //         if(!tmpNode || tmpNode.type != 'element' || tmpNode.tagName != 'br'){
+            //             var br = UE.uNode.createElement('br');
+            //             br.parentNode = li;
+            //             newChildrens.push(br);
+            //         }
+            //
+            //         index = newChildrens.length;
+            //     }
+            // });
             if(newChildrens.length){
                 li.children = newChildrens;
             }
@@ -15325,9 +15324,9 @@ UE.plugins['list'] = function () {
 
             var style = domUtils.getStyle(node, 'list-style-type');
             style && (node.style.cssText = 'list-style-type:' + style);
-            node.className = utils.trim(node.className.replace(/list-paddingleft-\w+/,'')) + ' list-paddingleft-' + type;
+            // node.className = utils.trim(node.className.replace(/list-paddingleft-\w+/,'')) + ' list-paddingleft-' + type;
             utils.each(domUtils.getElementsByTagName(node,'li'),function(li){
-                li.style.cssText && (li.style.cssText = '');
+                // li.style.cssText && (li.style.cssText = '');
                 if(!li.firstChild){
                     domUtils.remove(li);
                     return;
@@ -15892,7 +15891,7 @@ UE.plugins['list'] = function () {
      * ```
      */
 
-    me.commands['insertorderedlist'] =
+    /*me.commands['insertorderedlist'] =
     me.commands['insertunorderedlist'] = {
             execCommand:function (command, style) {
 
@@ -16184,7 +16183,7 @@ UE.plugins['list'] = function () {
                 }
                 return node ? getStyle(node) || domUtils.getComputedStyle(node, 'list-style-type') : null;
             }
-        };
+        };*/
 };
 
 

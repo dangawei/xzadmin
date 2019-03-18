@@ -9,7 +9,6 @@
             :styles="styles"
         >
             <Tree :data="alldata" show-checkbox multiple ref="treeNode"></Tree>
-            <!-- <Tree :data="alldata" multiple ref="treeNode"></Tree> -->
             <div class="demo-drawer-footer">
                 <Button style="margin-right: 8px" @click="remove">取消</Button>
                 <Button type="primary" @click="sure">确定</Button>
@@ -34,7 +33,23 @@
             }
         },
         computed:{
-            ...mapGetters({alldata:'knowledgeDatas',bool:"knowledgeDisabled",selValue:'knowledge'}),
+            ...mapGetters({bool:"knowledgeDisabled"}),
+            alldata:{
+                get(){
+                    return this.$store.state.entertest.knowledgeDatas
+                },
+                set(val){
+
+                }
+            },
+            selValue:{
+                get(){
+                    return this.$store.state.entertest.knowledge
+                },
+                set(val){
+
+                }
+            }
         },
         watch:{
             // bool:function(){

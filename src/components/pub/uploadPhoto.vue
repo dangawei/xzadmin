@@ -27,11 +27,7 @@
 
 <script>
 export default {
-    props:{
-        importData:{
-            type:String
-        }
-    },
+    props:["importData"],
     data() {
         return {
             uploadnum:0,

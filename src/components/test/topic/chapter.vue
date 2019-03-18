@@ -1,8 +1,6 @@
 <template>
     <div class="">
         <Cascader :data="datas" v-model="valueData" :disabled="isDisabled" :load-data="loadData"></Cascader>
-        <!-- <Cascader :data="datas" :load-data="loadData" v-model="valueData" @on-change="change" :render-format="format"></Cascader> -->
-         <!-- :load-data="loadData" -->
     </div>
 </template>
 <script>
@@ -11,14 +9,6 @@
         props: ['importData'],
         data () {
             return {
-                // datas: [
-                //     {
-                //         value: 0,
-                //         label: '全部',
-                //         children: [],
-                //         loading: false
-                //     }
-                // ],
                 isDisabled:true
             }
         },
@@ -52,7 +42,7 @@
             }
         },
         created(){
-            
+
         },
         methods: {
             loadData (e, callback) {
@@ -65,9 +55,7 @@
                 })
             },
             change(value,selectedData){
-                // var labels=selectedData[value.length-1].__label;
                 this.$store.dispatch('chapterSearch',value)
-                console.log(value);
             },
         }
     }

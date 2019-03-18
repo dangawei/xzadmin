@@ -19,7 +19,7 @@
                 <!-- <updata-password :importShow="importShow" @exportShow="exportShow" v-if="importShow"></updata-password> -->
             </ul>
         </div>
-        
+
    </div>
 </template>
 
@@ -27,12 +27,12 @@
 export default {
   name: 'Header',
     components:{
-        
+
     },
   data () {
         return {
             items:{
-                name:this.$webapi.get('account')
+                name:this.$webapi.getlocal('name')
             },
             importShow:false
         }
@@ -48,19 +48,16 @@ export default {
      },
     loginout:function (){
         let _this = this
-        if (this.$webapi.get('token')=="") {
-
-        }
         this.$api.post('/admin/api/user/logout', null, reset => {
             if (reset.code === 200) {
-                _this.$webapi.save('id',"")
-                _this.$webapi.save('account',"")
-                _this.$webapi.save('name',"")
+                _this.$webapi.savelocal('id',"")
+                _this.$webapi.savelocal('account',"")
+                _this.$webapi.savelocal('name',"")
                 _this.$router.push({path:"/login"})
             }else if (reset.code ===-1 ) {
-                _this.$webapi.save('token',"")
-                _this.$webapi.save('companyId',"")
-                _this.$webapi.save('companyName',"")
+                _this.$webapi.savelocal('token',"")
+                _this.$webapi.savelocal('companyId',"")
+                _this.$webapi.savelocal('companyName',"")
                 _this.$router.push({path:"/login"})
             }
             else {
@@ -72,7 +69,6 @@ export default {
         this.importShow=true;
     },
     exportShow(e){
-        console.log(e);
         this.importShow=e.show
     }
   }

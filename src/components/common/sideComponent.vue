@@ -2,20 +2,24 @@
    <div class="SideMenuComponent">
         <div class="mermber-logo"><i></i>旭智后台管理</div>
         <Scroll :height='muneheight'>
-            <Menu  theme="light" width="auto" :open-names="['1']" :theme="theme2"  @on-select="changeMenu" accordion v-if="show">
+            <!-- theme="light" -->
+            <Menu width="auto" :open-names="['1']" :theme="theme2"  @on-select="changeMenu" accordion v-if="show">
                 <div class="">
-                    <Submenu :name="index" v-for="(item,index) in datas" :key="item.id">
+                    <Submenu :name="index" v-for="(item,index) in dataArr" :key="item.id">
                         <template slot="title" style="text-align: left;">
                             <Icon type="ios-navigate"></Icon>
-                            <span>{{item.menuName}}</span>
+                            <span>{{item.name}}</span>
                         </template>
-                        <MenuGroup :title="itemlist.menuItem" v-if="itemlist.menuItem" v-for="(itemlist,itemlistindex) in item.menuLists" :key="itemlist.id">
-                            <MenuItem :name="index+'-'+itemlistindex+'-'+itemindex" v-for="(itemOne,itemindex) in itemlist.menuItemList" :key="itemOne.id" style="padding-left: 58px;text-align: left;">
-                                {{itemOne.menuName}}
+                        <Submenu :name="index+'-'+itemlistindex"  v-for="(itemlist,itemlistindex) in item.childMenu" :key="itemlist.id" v-if="itemlist.childMenu">
+                            <template slot="title" style="text-align: left;">
+                                <span>{{itemlist.name}}</span>
+                            </template>
+                            <MenuItem :name="index+'-'+itemlistindex+'-'+itemindex" v-for="(itemOne,itemindex) in itemlist.childMenu" :key="itemOne.id" style="padding-left: 58px;text-align: left;">
+                                {{itemOne.name}}
                             </MenuItem>
-                        </MenuGroup>
-						<MenuItem :name="index+'-'+itemlistindex" v-if="!itemlist.menuItem" v-for="(itemlist,itemlistindex) in item.menuLists" style="text-align: left;" :key="itemlist.id">
-                            {{itemlist.menuName}}
+                        </Submenu>
+						<MenuItem :name="index+'-'+itemlistindex" v-if="!itemlist.childMenu" v-for="(itemlist,itemlistindex) in item.childMenu" style="text-align: left;" :key="itemlist.id">
+                            {{itemlist.name}}
                         </MenuItem>
                     </Submenu>
                 </div>
@@ -28,118 +32,7 @@ export default {
   name: 'SideMenu',
     data () {
         return {
-            datas:[
-                // {
-                //     id:1,
-                //     menuName:"角色管理",
-                //     menuLists:[
-                //         {
-                //             id:2,
-                //             menuName:"角色列表",
-                //             path:"/role/list"
-                //         }
-                //     ]
-                // },
-                {
-                    menuName:"题库管理",
-                    menuLists:[
-                        {
-                            menuItem:"题目管理",
-                            menuItemList:[
-                                {
-                                    id:11,
-                                    menuName:"反馈题目列表",
-                                    path:"/feedback/list"
-                                },
-                                {
-                                    id:12,
-                                    menuName:"题目录入",
-                                    path:"/enter/test"
-                                },
-                                {
-                                    id:15,
-                                    menuName:"正式试题列表",
-                                    path:"/use/test/list"
-                                },
-                                // {
-                                //     id:14,
-                                //     menuName:"公共库题目列表",
-                                //     path:"/pubtopic/list"
-                                // }
-                            ]
-                        },
-                        {
-                            menuItem:"校验管理",
-                            menuItemList:[
-                                {
-                                    id:13,
-                                    menuName:"校本库题目列表",
-                                    path:"/topic/list"
-                                },
-                                {
-                                    id:14,
-                                    menuName:"公共库题目列表",
-                                    path:"/pubtopic/list"
-                                }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    id:3,
-                    menuName:"App版本管理",
-                    menuLists:[
-                        {
-                            id:4,
-                            menuName:"版本列表",
-                            path:"/app/version/list"
-                        },
-                        {
-                            id:6,
-                            menuName:"桌面管理",
-                            path:"/app/desktop/list"
-                        }
-                    ]
-                },
-                {
-                    id:21,
-                    menuName:"学生管理",
-                    menuLists:[
-                        {
-                            id:22,
-                            menuName:"学生列表",
-                            path:"/student/list"
-                        },
-                    ]
-                },
-                {
-                    id:31,
-                    menuName:"教师管理",
-                    menuLists:[
-                        {
-                            id:32,
-                            menuName:"教师列表",
-                            path:"/teacher/list"
-                        },
-                    ]
-                },
-                // {
-                //     id:7,
-                //     menuName:"资源管理",
-                //     menuLists:[
-                //         {
-                //             id:8,
-                //             menuName:"资源列表",
-                //             path:"www.baidu.com"
-                //         },
-                //         {
-                //             id:9,
-                //             menuName:"资源详情",
-                //             path:"www.baidu.com"
-                //         },
-                //     ]
-                // },
-            ],
+            dataArr:[],
             muneheight:"",
             theme2:'dark',
             show:false
@@ -150,6 +43,7 @@ export default {
 
     },
     created () {
+        this.list();
         this.show=true
         this.muneheight = window.innerHeight-64;
         window.onresize = function() {
@@ -159,19 +53,32 @@ export default {
     methods: {
         changeMenu (e) {
             var arrIndex=e.split("-");
-            // console.log(arrIndex);
             if (arrIndex.length==2) {
                 var muneindex = e.split("-")[0]
                 var itemlistindex = e.split("-")[1]
-                this.$router.push({path:this.datas[muneindex].menuLists[itemlistindex].path})
+                this.$router.push({path:this.dataArr[muneindex].childMenu[itemlistindex].uri})
             }else{
                 var muneindex = e.split("-")[0]
                 var itemlistindex = e.split("-")[1]
                 var itemindex = e.split("-")[2]
-                this.$router.push({path:this.datas[muneindex].menuLists[itemlistindex].menuItemList[itemindex].path})
+                this.$router.push({path:this.dataArr[muneindex].childMenu[itemlistindex].childMenu[itemindex].uri})
             }
             //window.location.href = this.items[muneindex].adminResourcesDoList[itemindex].path
-        }
+        },
+        list() {
+            let _this = this
+            this.$api.get('/admin/api/menu/list', null, reset => {
+                if (reset.code === 200) {
+                    if(reset.data){
+                        this.dataArr = reset.data
+                    }else{
+                        this.$Message.success("暂无菜单权限!")
+                    }
+                }else {
+                    _this.$netcode.getApiCode(reset)
+                }
+            })
+        },
     }
 }
 </script>

@@ -9,9 +9,6 @@
            >
       </quill-editor>
    </div>
-   <!-- @ready="onEditorReady($event)"
-            @blur="onEditorBlur($event)"
-            @focus="onEditorFocus($event)" -->
 </template>
 <style scoped="" lang="less">
   .quill-editor {
@@ -27,46 +24,77 @@
     import 'quill/dist/quill.core.css'
     import 'quill/dist/quill.snow.css'
     import 'quill/dist/quill.bubble.css'
-    import {quillRedefine} from 'vue-quill-editor-upload'
-    import { quillEditor } from 'vue-quill-editor' //调用编辑器
+    // import {quillRedefine} from 'vue-quill-editor-upload'
+    // import { quillEditor } from 'vue-quill-editor' //调用编辑器
+    import {quillEditor, Quill} from 'vue-quill-editor'
+    import {container, ImageExtend, QuillWatch} from 'quill-image-extend-module'
+    // import ImageResize from 'quill-image-resize-module'
+    Quill.register('modules/ImageExtend', ImageExtend)
+    // use resize module
+    // Quill.register('modules/ImageResize', ImageResize)
     export default {
         props: ['UE_editdata'],
-        data () {
-            return {
-              content:"",
-              editorOption:{}
-            }
-        },
         components: {
            quillEditor
         },
-        created () {
-          this.editorOption = quillRedefine(
-            {
-              // 图片上传的设置
-              uploadConfig: {
-                action: this.$webcommon+"/pic/upload/",  // 必填参数 图片上传地址
-                // 必选参数  res是一个函数，函数接收的response为上传成功时服务器返回的数据
-                // 你必须把返回的数据中所包含的图片地址 return 回去
-                res: (respnse) => {                 
-                  return respnse.resData
-                },
-                name: 'mainpic'  // 图片上传参数名
-              }
+        data () {
+            return {
+                content:"",
+                editorOption:{
+                    modules:{
+                        // ImageResize: {},
+                        ImageExtend: {
+                            loading: false,
+                            name: 'file',
+                            action: this.$api.root+"/admin/api/upload/image",
+                            headers: (xhr) => {
+                                xhr.withCredentials = true
+                            },
+                            response: (res) => {
+                                return res.data.url
+                            }
+                        },
+                        toolbar: {
+                            container: container,
+                            handlers: {
+                                'image': function () {
+                                    QuillWatch.emit(this.quill.id)
+                                }
+                            }
+                        }
+                    }
+                }
             }
-          )
+        },
+        created () {
+          // this.editorOption = quillRedefine(
+          //   {
+          //       // 图片上传的设置
+          //       uploadConfig: {
+          //           header: (xhr, formData) => {
+          //               // xhr.setRequestHeader('myHeader','myValue');
+          //               xhr.withCredentials = true
+          //           },
+          //           action: this.$api.root+"/admin/api/upload/image",  // 必填参数 图片上传地址
+          //           withCredentials:true,
+          //           // 必选参数  res是一个函数，函数接收的response为上传成功时服务器返回的数据
+          //           // 你必须把返回的数据中所包含的图片地址 return 回去
+          //           res: (response) => {
+          //               return response.data.url
+          //           },
+          //           name: 'file'  // 图片上传参数名
+          //       }
+          //   }
+          // )
           //$("#ql-editor").append('<p><img src="'+this.editorOption+'"</p>')
-          // this.content = this.contents
        },
         mounted() {
           //do something after mounting vue instance
-          console.log(this.UE_editdata);
           this.content = this.UE_editdata
-          this.content=this.content+'<table cellpadding="0" cellspacing="0" width="100%"><tr><td style="white-space:nowrap;">【小题1】</td><td width="100%"></td></tr></table>'
         },
         computed: {
            editor() {
-             return this.$refs.myQuillEditor.quill
+               return this.$refs.myQuillEditor.quill
             }
         },
         methods: {

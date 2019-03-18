@@ -62,6 +62,54 @@
                         </Row>
                     </Form>
                 </div>
+                <div class="">
+                    <!-- 阅读理解 -->
+                    <div class="" v-if="formitem.scope==6 && formitem.childSubjects!=undefined">
+                        <div>
+                            <h3>全部选项</h3>
+                        </div>
+                        <div v-for="(value, index) in formitem.childSubjects" :key="index" v-if="yueduShow">
+                            <Row style="margin-bottom:15px;">
+                                <Col :xs="24" :sm="24" :md="24" :lg="24">
+                                    <Input :value="value.content" style="width:80%;" @input="changeValue(value.id,value.content)"></Input>
+                                </Col>
+                            </Row>
+                            <Row style="margin-bottom:15px;">
+                                <Col :xs="24" :sm="24" :md="24" :lg="24" v-for="(item,key,num) in JSON.parse(value.selection)" :key="num" style="margin-bottom:15px;">
+                                    <p class="text-indent">
+                                        <span>{{key}}.</span>
+                                        <Input :value="item" style="width:80%;" @input="changeItem(value.id,key,value.selection)"></Input>
+                                    </p>
+                                </Col>
+                                <Col :xs="24" :sm="24" :md="1" :lg="1">
+                                    <Button type="primary" size="small" @click="sureContent(value.id,value.content,value.selection)">确认修改</Button>
+                                </Col>
+                            </Row>
+                        </div>
+                    </div>
+                    <!-- 七选五 -->
+                    <div class="" v-if="formitem.scope==7 && formitem.childSubjects!=undefined">
+                        <div>
+                            <h3>全部选项</h3>
+                        </div>
+                        <div v-for="(value, index) in formitem.childSubjects" :key="index" v-if="qiwuShow">
+                            <Row style="margin-bottom:15px;">
+                                <Col :xs="24" :sm="24" :md="1" :lg="1">
+                                    <span>({{index+1}})</span>
+                                </Col>
+                                <Col :xs="24" :sm="24" :md="24" :lg="24" v-for="(item,key,num) in JSON.parse(value.selection)" :key="num" style="margin-bottom:15px;">
+                                    <p class="text-indent">
+                                        <span>{{key}}.</span>
+                                        <Input :value="item" style="width:80%;" @input="changeItem(value.id,key,value.selection)"></Input>
+                                    </p>
+                                </Col>
+                                <Col :xs="1" :sm="1" :md="1" :lg="1">
+                                    <Button type="primary" size="small" @click="sureContent(value.id,value.content,value.selection)">确认修改</Button>
+                                </Col>
+                            </Row>
+                        </div>
+                    </div>
+                </div>
                 <!--操作按钮-->
                 <div class="tableListOperator">
                     <Row>
@@ -212,7 +260,7 @@
                 // }
                 // this.$api.post("/appVersion/list",data,result=>{
                 //     if (result.code==0) {
-                //         _this.data=result.data                    
+                //         _this.data=result.data
                 //     }else{
                 //         _this.$netcode.getApiCode(result)
                 //     }
@@ -259,7 +307,7 @@
             pageComponentDate (e) {
                 this.pageData.pageCurrent = e.pageCurrent
                 this.pageData.pagesize = e.pagesize
-                this.list()           
+                this.list()
             },
             itemdel (params) {
                 let _this = this

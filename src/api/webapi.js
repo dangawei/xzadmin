@@ -8,6 +8,10 @@ function saveStorage (typeName,typedata){
 function getStorage (typeName){
     return window.sessionStorage.getItem(typeName)
 }
+// // 保存cookie
+// function saveCookie(typeName){
+//     document.cookie="name="+typeName;
+// }
 
 // 保存在localstorage
 function saveLocal(key,value){
@@ -26,10 +30,10 @@ function removeLocal(key){
 //时间格式转换
 function gettime (type,time) {
     type = type || 'date'
-    time = time ? parseInt(time, 10) : null
+    time = time ? time : null
     var result = ''
     if (time) {
-        var tdate = new Date(time * 1000)
+        var tdate = new Date(time)
         var year = tdate.getFullYear()
         var month = tdate.getMonth() + 1
         var date = tdate.getDate()

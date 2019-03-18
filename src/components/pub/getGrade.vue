@@ -18,18 +18,28 @@ export default {
     computed:{
         valueId:{
             get () {
-                return this.$store.state.entertest.grade
+                if(this.importData){
+                    // this.$store.commit('gradeIdEnter',this.importData)
+                    this.$store.dispatch('gradeIdEnter',this.importData)
+                    return this.importData
+                }else{
+                    return this.$store.state.entertest.grade
+                }
                 // return this.$store.getters.grade
             },
             set (val) {
-                // console.log(val);
                 // this.$emit('exportData',val)
                 // this.$store.dispatch('gradeEnter',val)
             }
         }
     },
     mounted() {
-        this.list();
+        if(this.$webapi.get("enterGrade")){
+            this.alldata=JSON.parse(this.$webapi.get("enterGrade"))
+        }else{
+            this.list();
+        }
+
     },
     methods: {
         list(){
@@ -37,14 +47,21 @@ export default {
             this.$api.get('/admin/api/grade/list',null,reset => {
                 if (reset.code === 200){
                     _this.alldata = reset.data
+                    _this.$webapi.save("enterGrade",JSON.stringify(_this.alldata));
                 }else{
                     _this.$netcode.getApiCode(reset)
                 }
             })
         },
         change(e) {
-            this.$emit('exportData',e.value)
-            this.$store.dispatch('gradeEnter',e)
+            if(e){
+                this.$store.dispatch('gradeEnter',e)
+                this.$emit('exportData',e.value)
+            }else{
+                this.$store.dispatch('gradeEnter','')
+                this.$emit('exportData','')
+            }
+
         }
     }
 }

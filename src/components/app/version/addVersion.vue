@@ -180,8 +180,6 @@
                 this.formValidate.appTypeId=e
             },
             onsuccess(response, file, fileList) {
-                // this.$Message.success("上传成功!")
-                console.log(response);
                 if (response.code==200) {
                     this.$Message.success("上传成功!")
                     // this.$refs.upload.clearFiles()

@@ -31,12 +31,37 @@ export default new Router({
 			// component: Home,
 			children:[
 				{
+					path:'/account/list',
+					name:'accountList',
+					meta:{
+						keepAlive: false, //此组件不需要被缓存
+					},
+					component:(resolve)=>require(['@/components/account/accountList'],resolve)
+				},
+				{
 					path:'/role/list',
-					name:'Role',
+					name:'roleList',
 					meta:{
 						keepAlive: false, //此组件不需要被缓存
 					},
 					component:(resolve)=>require(['@/components/role/roleList'],resolve)
+				},
+				{
+					path:'/role/resource/:id',
+					name:'roleResource',
+					meta:{
+						keepAlive: false, //此组件不需要被缓存
+					},
+					component:(resolve)=>require(['@/components/role/roleResource'],resolve)
+				},
+				// 菜单管理
+				{
+					path:'/menu/add',
+					name:'addMenu',
+					meta:{
+						keepAlive: false, //此组件不需要被缓存
+					},
+					component:(resolve)=>require(['@/components/menu/addMenu'],resolve)
 				},
 				// {
 				// 	path:'/app/list',
@@ -90,7 +115,7 @@ export default new Router({
 					path:'/feedback/edit/:id',
 					name:'feedbackEdit',
 					meta:{
-						keepAlive: true, //此组件不需要被缓存
+						keepAlive: false, //此组件不需要被缓存
 						loading:false,//是否读取本地数据
 					},
 					component:(resolve)=>require(['@/components/feedback/feedbackEdit'],resolve)
@@ -117,7 +142,7 @@ export default new Router({
 					path:'/use/test/edit/:uid',
 					name:'useTestEdit',
 					meta:{
-						keepAlive: true, //此组件不需要被缓存
+						keepAlive: false, //此组件不需要被缓存
 						loading:false,//是否读取本地数据
 					},
 					component:(resolve)=>require(['@/components/usetest/useTestEdit'],resolve)
@@ -143,21 +168,13 @@ export default new Router({
 					component:(resolve)=>require(['@/components/test/topic/topicList'],resolve)
 				},
 				{
-					path:'/topic/edit/:id',
-					name:'topicEdit',
-					meta:{
-						keepAlive: true, //此组件需要被缓存
-						loading:false,//是否读取本地数据
-					},
-					component:(resolve)=>require(['@/components/test/topic/topicEdit'],resolve)
-				},
-				{
-					path:'/topic/preview/:id',
-					name:'topicPreview',
+					path:'/topic/feedback/list',
+					name:'topicFeedbackList',
 					meta:{
 						keepAlive: false, //此组件不需要被缓存
+						boolOnloading:false,
 					},
-					component:(resolve)=>require(['@/components/test/topic/topicPreview'],resolve)
+					component:(resolve)=>require(['@/components/test/topic/topicFeedbackList'],resolve)
 				},
 				/////////
 				// 公共库 //
@@ -173,21 +190,13 @@ export default new Router({
 					component:(resolve)=>require(['@/components/test/pubtopic/pubtopicList'],resolve)
 				},
 				{
-					path:'/pubtopic/edit/:id',
-					name:'pubtopicEdit',
-					meta:{
-						keepAlive: true, //此组件需要被缓存
-						loading:false,//是否读取本地数据
-					},
-					component:(resolve)=>require(['@/components/test/pubtopic/pubtopicEdit'],resolve)
-				},
-				{
-					path:'/pubtopic/preview/:id',
-					name:'pubtopicPreview',
+					path:'/pubtopic/feedback/list',
+					name:'pubtopicFeedbackList',
 					meta:{
 						keepAlive: false, //此组件不需要被缓存
+						boolOnloading:false
 					},
-					component:(resolve)=>require(['@/components/test/pubtopic/pubtopicPreview'],resolve)
+					component:(resolve)=>require(['@/components/test/pubtopic/pubtopicFeedbackList'],resolve)
 				},
 				// 学生管理
 				{
@@ -209,42 +218,173 @@ export default new Router({
 					},
 					component:(resolve)=>require(['@/components/teacher/teacherList'],resolve)
 				},
+				// 班级管理
+				{
+					path:'/class/list',
+					name:'classList',
+					meta:{
+						keepAlive: false, //此组件不需要被缓存
+						boolOnloading:false
+					},
+					component:(resolve)=>require(['@/components/class/classList'],resolve)
+				},
+				// 学校管理
+				{
+					path:'/school/list',
+					name:'schoolList',
+					meta:{
+						keepAlive: false, //此组件不需要被缓存
+						boolOnloading:false
+					},
+					component:(resolve)=>require(['@/components/school/schoolList'],resolve)
+				},
+				//录题管理
+				{
+					path:'/enter/list',
+					name:'enterList',
+					meta:{
+						keepAlive: false, //此组件不需要被缓存
+						boolOnloading:false
+					},
+					component:(resolve)=>require(['@/components/enter/enterList/enterSubmitList'],resolve)
+				},
 				// 录入试题
+				// 老式录题
 				{
 					path:'/enter/test',
-					name:'enterTest',
+					name:'enterNew',
 					meta:{
 						keepAlive: false, //此组件不需要被缓存
 						boolOnloading:false
 					},
-					component:(resolve)=>require(['@/components/test/entertest/enterTest'],resolve)
+					component:(resolve)=>require(['@/components/enter/enterNew/enterNew'],resolve)
 				},
 				{
-					path:'/enter/test/preview',
-					name:'entertestPreview',
+					path:'/enter/test/list',
+					name:'enterTestList',
 					meta:{
 						keepAlive: false, //此组件不需要被缓存
 						boolOnloading:false
 					},
-					component:(resolve)=>require(['@/components/test/entertest/entertestPreview'],resolve)
+					component:(resolve)=>require(['@/components/enter/enterNew/enterTestList'],resolve)
+				},
+				// 新式录题
+				{
+					path:'/enter/new/test',
+					name:'enterNewTest',
+					component:(resolve)=>require(['@/components/enter/enterNew/enterNewTest'],resolve)
+				},
+
+				// 新闻管理
+				{
+					path:'/new/add',
+					name:'addNew',
+					component:(resolve)=>require(['@/components/new/addNew'],resolve)
 				},
 				{
-					path:'/analysis/enter/preview',
-					name:'analysisTestPreview',
-					meta:{
-						keepAlive: false, //此组件不需要被缓存
-						boolOnloading:false
-					},
-					component:(resolve)=>require(['@/components/test/entertest/analysisTestPreview'],resolve)
+					path:'/new/list',
+					name:'newList',
+					component:(resolve)=>require(['@/components/new/newList'],resolve)
 				},
 				{
-					path:'/edit/enter',
-					name:'editEnter',
-					meta:{
-						keepAlive: false, //此组件不需要被缓存
-						boolOnloading:false
-					},
-					component:(resolve)=>require(['@/components/test/entertest/editEnter'],resolve)
+					path:'/star/new/list',
+					name:'newStarList',
+					component:(resolve)=>require(['@/components/new/star/starNewList'],resolve)
+				},
+				{
+					path:'/new/detail/:id',
+					name:'detailNew',
+					component:(resolve)=>require(['@/components/new/detailNew'],resolve)
+				},
+				{
+					path:'/new/edit/:id',
+					name:'editNew',
+					component:(resolve)=>require(['@/components/new/editNew'],resolve)
+				},
+				// 名著阅读
+				{
+					path:'/read/add',
+					name:'addRead',
+					component:(resolve)=>require(['@/components/new/read/addRead'],resolve)
+				},
+				{
+					path:'/read/list',
+					name:'readList',
+					component:(resolve)=>require(['@/components/new/read/readList'],resolve)
+				},
+				{
+					path:'/read/edit/:id',
+					name:'editRead',
+					component:(resolve)=>require(['@/components/new/read/editRead'],resolve)
+				},
+				// 消息管理
+				{
+					path:'/message/list',
+					name:'messageList',
+					component:(resolve)=>require(['@/components/message/messageList'],resolve)
+				},
+				// ip白名单管理
+				{
+					path:'/ip/list',
+					name:'ipList',
+					component:(resolve)=>require(['@/components/ip/ipList'],resolve)
+				},
+				// 系统反馈管理
+				{
+					path:'/systemfeed/list',
+					name:'systemfeedList',
+					component:(resolve)=>require(['@/components/systemfeed/systemfeedList'],resolve)
+				},
+			]
+		},
+		{
+			path: '/enter',
+			name: 'Enter',
+			component: (resolve)=>require(['@/components/enter'],resolve),
+			children:[
+				// 新题录入预览
+				{
+					path:'/enter/new/list',
+					name:'enterNewList',
+					component:(resolve)=>require(['@/components/enter/enterNew/enterNewList'],resolve)
+				},
+				// 待修改
+				{
+					path:'/enter/fack/list',
+					name:'enterFackList',
+					component:(resolve)=>require(['@/components/enter/enterList/enterFackList'],resolve)
+				},
+				// 待提交
+				{
+					path:'/enter/submit/list',
+					name:'enterSubmitList',
+					component:(resolve)=>require(['@/components/enter/enterList/enterSubmitList'],resolve)
+				},
+				// 选择教辅
+				{
+					path:'/enter/teach/test',
+					name:'enterTeachTest',
+					component:(resolve)=>require(['@/components/enter/enterNew/enterTeachTest'],resolve),
+					children:[
+						{
+							path:'/enter/teach/link',
+							name:'enterTeachLink',
+							component:(resolve)=>require(['@/components/enter/enterNew/enterTeachLink'],resolve),
+							meta:{
+								enterBool:false
+							},
+						},
+						{
+							path:'/enter/teach/hand',
+							name:'enterTeachHand',
+							component:(resolve)=>require(['@/components/enter/enterNew/enterTeachHand'],resolve)
+						},
+						{
+							path:'/enter/teach/word',
+							name:'enterTeachWord',
+							component:(resolve)=>require(['@/components/enter/enterNew/enterTeachWord'],resolve)
+						}
+					]
 				},
 				{
 					path:'/import/test',
@@ -253,7 +393,7 @@ export default new Router({
 						keepAlive: false, //此组件不需要被缓存
 						boolOnloading:false
 					},
-					component:(resolve)=>require(['@/components/test/entertest/importTest'],resolve)
+					component:(resolve)=>require(['@/components/enter/enterNew/importTest'],resolve)
 				},
 			]
 		}

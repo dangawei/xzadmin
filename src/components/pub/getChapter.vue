@@ -1,6 +1,6 @@
 <template>
     <div class="">
-        <Cascader :data="datas" v-model="valueData" :disabled="bool" @on-change="change"></Cascader>
+        <Cascader :data="datas" v-model="valueData" :disabled="bool" @on-change="change" placeholder="请先选教材,再选择章节"></Cascader>
     </div>
 </template>
 <script>
@@ -9,47 +9,63 @@
         props: ['importData'],
         data () {
             return {
-                bool:true
+                bool:true,
+                // datas:[],
+                // valueData:[]
             }
         },
         computed:{
-            ...mapGetters({datas:'chapterDatas'}),
-            valueData:{
+            // ...mapGetters({datas:'chapterDatas'}),
+            datas:{
                 get () {
-                    if(this.$store.state.entertest.textbook){
-                        this.bool=false;
+                    if(this.importData){
+                        if(this.$webapi.get("enterChapters")){
+                            return JSON.parse(this.$webapi.get("enterChapters"))
+                        }else{
+                            return this.$store.state.entertest.chapterDatas
+                        }
                     }else{
-                        this.bool=true;
+                        return this.$store.state.entertest.chapterDatas
                     }
-                    return this.$store.state.entertest.chapterArray
                 },
                 set (val) {
-                    // this.$emit('exportData',val)
-                    // this.$store.dispatch('chapterArrayEnter',val)
+                }
+            },
+            valueData:{
+                get () {
+                    if(this.importData){
+                        var dataSel=JSON.parse(this.importData)
+                        this.bool=false;
+                        return dataSel
+                    }else{
+                        if(this.$store.state.entertest.textbook){
+                            this.bool=false;
+                            return this.$store.state.entertest.chapterArray
+                        }
+                    }
+                },
+                set (val) {
                 }
             }
         },
-        watch:{
-
-        },
         created(){
-            // this.getlist();
+            if(this.$store.state.entertest.chapterArray.length==0){
+                // console.log("false")
+                this.$store.dispatch('chapterTextEnter',[])
+            }
+
         },
         methods: {
             change(value,selectedData){
+                var labelsArray=[];
                 var labels=selectedData[value.length-1].__label;
-                this.$emit('exportData',value)
-                this.$store.dispatch('chapterArrayEnter',value)
-                this.$store.dispatch('chapterTextEnter',labels)
-            },
-            format (labels, selectedData) {
-                var txt='';
-                if (labels[labels.length-1]=="无章节") {
-                    labels.splice(labels.length-1,1)
+                for(let i=0,length=selectedData.length;i<length;i++){
+                    labelsArray.push(selectedData[i].label);
                 }
-                txt=labels.join('/')
-                return txt;
-            }
+                this.$emit('exportData',labelsArray)
+                this.$store.dispatch('chapterArrayEnter',value)
+                this.$store.dispatch('chapterTextEnter',labelsArray)
+            },
         }
     }
 </script>

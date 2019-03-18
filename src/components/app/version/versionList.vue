@@ -18,35 +18,6 @@
         <div class="page-component-bd">
             <!--查询条件-->
             <div class="tableListForm">
-                <!-- <Form :model="formCustom" :label-width="100">
-                    <Row>
-                        <Col :xs="24" :sm="24" :md="8" :lg="6">
-                            <FormItem label="apk名称" prop="appName">
-                                <Input type="text" v-model="formCustom.appName"></Input>
-                            </FormItem>
-                        </Col>
-                        <Col :xs="24" :sm="24" :md="8" :lg="8">
-                            <FormItem label="版本号" prop="version">
-                                <Input type="text" v-model="formCustom.version"></Input>
-                            </FormItem>
-                        </Col>
-                        <Col :xs="24" :sm="24" :md="8" :lg="8">
-                            <FormItem label="更新开始时间 ">
-                                <start-date @exportDate="startExport"></start-date>
-                            </FormItem>
-                        </Col>
-                        <Col :xs="24" :sm="24" :md="8" :lg="8">
-                            <FormItem label="更新结束时间 ">
-                                <end-date @exportDate="endExport"></end-date>
-                            </FormItem>
-                        </Col>
-                        <Col :xs="24" :sm="24" :md="8" :lg="6">
-                            <FormItem>
-                                <Button type="primary" @click="handleSubmit('formCustom')">查询</Button>
-                            </FormItem>
-                        </Col>
-                    </Row>
-                </Form> -->
             </div>
             <!--操作按钮-->
             <div class="tableListOperator">
@@ -114,27 +85,33 @@ export default {
             columnsdata: [
                 {
                     title: '名称',
-                    key: 'name'
+                    key: 'name',
+                    align: 'center',
                 },
                 {
                     title: '描述',
-                    key: 'descr'
+                    key: 'descr',
+                    align: 'center',
                 },
                 {
                     title: '版本名',
-                    key: 'versionName'
+                    key: 'versionName',
+                    align: 'center',
                 },
                 {
                     title: '版本号',
-                    key: 'versionCode'
+                    key: 'versionCode',
+                    align: 'center',
                 },
                 {
                     title: '渠道',
-                    key: 'channel'
+                    key: 'channel',
+                    align: 'center',
                 },
                 {
                     title: '下载地址',
                     key: 'url',
+                    align: 'center',
                     width:168,
                     render:(h,params)=>{
                         return h("a",{
@@ -146,9 +123,10 @@ export default {
                 },
                 {
                     title: '更新时间',
-                    key: 'createdDate',
+                    key: 'lastModifiedDate',
+                    align: 'center',
                     render:(h,params)=>{
-                        var str = this.$webapi.gettime('date',(params.row.createdDate)/1000)
+                        var str = this.$webapi.gettime('date',params.row.lastModifiedDate)
                         return h('div', [
                             h('span', str)
                         ])

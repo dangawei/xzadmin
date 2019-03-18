@@ -30,31 +30,9 @@
                                     <get-course-type></get-course-type>
                                 </FormItem>
                             </Col>
-                            <!-- <Col :xs="24" :sm="24" :md="12" :lg="12">
-                                <FormItem label="知识点" prop="course">
-                                    <get-cource-cascader :importData="importCascderData" @exportData="exportCourseData" v-if="cascaderShow"></get-cource-cascader>
-                                </FormItem>
-                            </Col> -->
                         </Row>
                         <Row>
-                            <!-- <Col :xs="24" :sm="24" :md="6" :lg="6">
-                                <FormItem label="类型" prop="category">
-                                    <get-category :importData="importCategoryData" @exportData="exportCategoryData"></get-category>
-                                </FormItem>
-                            </Col>
-                            <Col :xs="24" :sm="24" :md="6" :lg="6">
-                                <FormItem label="难度" prop="difficulty">
-                                   <get-difficulty :importData="importDifficultyData" @exportData="exportDifficultyData"></get-difficulty>
-                                </FormItem>
-                            </Col> -->
-                            <Col :xs="24" :sm="24" :md="6" :lg="6">
-                                <FormItem label="是否反馈" prop="status">
-                                   <Select v-model="formCustom.status">
-                                        <Option value="1">校验试题</Option>
-                                        <Option value="-1">反馈试题</Option>
-                                    </Select>
-                                </FormItem>
-                            </Col>
+
                             <Col :xs="24" :sm="24" :md="6" :lg="6">
                                 <FormItem>
                                     <Button type="primary" @click="handleSubmit('formCustom')">查询</Button>
@@ -73,7 +51,6 @@
                         <div class="pagelist">
                             <div class="pagelist-hd">题目信息</div>
                             <div class="pagelist-bd">
-
                                 <Row>
                                     <Col :xs="24" :sm="8" :md="6" :lg="6">
                                         <FormItem label="题目id:" prop="id">
@@ -96,13 +73,13 @@
                                         </FormItem>
                                     </Col>
                                 </Row>
-                                <Row v-if="formitem.knowledgeList">
-                                    <Col :xs="24" :sm="8" :md="6" :lg="6">
-                                        <FormItem label="难度:" prop="url">
-                                            <p>{{formitem.difficulty}}</p>
+                                <Row>
+                                    <Col :xs="24" :sm="8" :md="6" :lg="6" v-if="formitem.source">
+                                        <FormItem label="来源:" prop="source">
+                                            <p>{{formitem.source}}</p>
                                         </FormItem>
                                     </Col>
-                                    <Col :xs="24" :sm="24" :md="18" :lg="18">
+                                    <Col :xs="24" :sm="24" :md="18" :lg="18" v-if="formitem.knowledgeList">
                                         <FormItem label="知识点:" prop="knowledgeList">
                                             <!-- {{formItem.knowledges}} -->
                                             <span v-for="item in formitem.knowledgeList" class="span-interval">{{item}}</span>
@@ -114,163 +91,173 @@
                         <div class="page-divider page-divider-horizontal "></div>
                         <div class="pagelist">
                             <div class="pagelist-hd">题干信息</div>
-                            <!-- <div class="tableListOperator">
-                                <Button type="primary"  @click="add()">添加</Button>
-                            </div> -->
                             <div class="pagelist-bd">
-                                <div class="">
+                                <div class="mgt">
                                     <Row>
-                                        <Col :xs="24" :sm="24" :md="24" :lg="24">
-                                            <h4>题目</h4>
+                                        <Col :xs="2" :sm="2" :md="2" :lg="2">
+                                            <h3>题目</h3>
+                                        </Col>
+                                        <Col span="22">
+                                            <update-ueditor :importData="formitem.question" :importType="'question'" :importId="formitem.id"  @exportData="exportQuestionData"></update-ueditor>
                                         </Col>
                                     </Row>
+                                </div>
+                                <div class="mgt">
                                     <Row>
-                                        <Col :xs="24" :sm="24" :md="24" :lg="24">
-                                            <p v-html="formitem.question" class="text-indents"></p>
+                                        <Col :xs="2" :sm="2" :md="2" :lg="2">
+                                            <h3>题干</h3>
+                                        </Col>
+                                        <Col span="22">
+                                            <!-- <Card> -->
+                                            <update-ueditor :importData="formitem.content" :importType="'content'" :importId="formitem.id"  @exportData="exportContentData"></update-ueditor>
+                                        </Col>
+                                    </Row>
+                                </div>
+                                <!-- 单选或者多选 -->
+                                <div class="mgt" v-if="formitem.scope==1||formitem.scope==2">
+                                    <Row>
+                                        <Col :xs="2" :sm="2" :md="2" :lg="2">
+                                            <div>
+                                                <h3>全部选项</h3>
+                                            </div>
+                                        </Col>
+                                        <Col span="22">
+                                            <Card>
+                                                <div v-for="(value, key, index) in selectionMsg" :key="key" class="div-indent">
+                                                    <h5 v-if="!inputShow">{{key}}:</h5>
+                                                    <Input v-model="key" style="width:7%;" placeholder="输入选项" @input="changeCon(index,key)" v-if="inputShow"/>
+                                                    <span style="fontSize:20px;"  @click="removeIcon(key)"><Icon type="md-remove-circle" v-if="inputShow" /></span>
+                                                    <p style="margin-top:10px;" v-html="value" class="p-indent"></p>
+                                                </div>
+                                                <div style="text-align:right;margin-top:15px;" v-if="!selBottonShow">
+                                                    <Button type="primary"  @click="editor" size="small">编辑选项</Button>
+                                                </div>
+                                                <div style="text-align:right;margin-top:15px;" v-if="selBottonShow">
+                                                    <span style="fontSize:20px;" @click="addIcon"><Icon type="md-add-circle" /></span>
+                                                    <Button type="primary"  @click="editorSure" size="small">确定</Button>
+                                                    <Button type="default"  @click="editorRemove" size="small">取消</Button>
+                                                </div>
+                                            </Card>
+                                            <p>
+                                                <span v-for="(value, key, index) in selectionMsg" :class="['sel-span',{classSel:styleSel==key}]" @click.capture.stop="selQuestion(value,key)">{{key}}</span>
+                                            </p>
+                                        </Col>
+                                        <Col span="22" offset="2" v-if="selectValueShow">
+                                            <select-ueditor :importData="selectValue" :importType="selectValueKey" :importId="formitem.id"  @exportData="exportSelectionData"></select-ueditor>
                                         </Col>
                                     </Row>
                                 </div>
 
-                                <div class="">
+                                <!-- 完型填空&&阅读理解&&七选五 -->
+                                <div class="mgt" v-if="(formitem.scope==5 ||formitem.scope==6 ||formitem.scope==7) && formitem.course=='英语'">
                                     <Row>
-                                        <Col :xs="24" :sm="24" :md="24" :lg="24">
-                                            <h4>题干</h4>
+                                    <Col span="2">
+                                        <div>
+                                            <h3>全部选项</h3>
+                                        </div>
+                                    </Col>
+                                    <Col span="22">
+                                        <Card>
+                                            <div v-for="(value,index) in yingyuMsg" :key="index" class="div-indent">
+                                                <Row style="margin-bottom:20px;border:1px solid #EAEAEA;">
+                                                    <Col span="3">
+                                                        <h5 style="display:inline-block;margin-right:10px;">
+                                                            <span style="margin-right:10px;">{{value.answer}}</span>
+                                                            <span>（{{index+1}}）</span>
+                                                        </h5>
+                                                    </Col>
+                                                    <Col span="21">
+                                                        <Row>
+                                                            <Col span="6" v-for="(item,key,num) in JSON.parse(value.selection)" :key="num">
+                                                                <span class="text-indent">
+                                                                    <span>{{key}}.</span>
+                                                                    <span>{{item}}</span>
+                                                                </span>
+                                                            </Col>
+                                                        </Row>
+                                                    </Col>
+                                                </Row>
+                                            </div>
+                                        </Card>
+                                        <p>
+                                            <span v-for="(value,index) in yingyuMsg" :class="['sel-span',{classSel:styleSel==index+1}]" @click.capture.stop="selFss(value,index)">{{index+1}}</span>
+                                        </p>
+                                    </Col>
+                                    <Col span="22" offset="2" v-if="fssShow">
+                                        <scope-fss :importData="selectValue" :importType="selectValueKey" @exportData="exportFssData"></scope-fss>
+                                    </Col>
+                                    </Row>
+                                </div><!-- 型填空&&阅读理解&&七选五 -->
+                                <!-- 语文题干分离 -->
+                                <div class="mgt" v-if="(formitem.scope==12 || formitem.scope==13 || formitem.scope==14) &&  formitem.course=='语文'">
+                                    <Row>
+                                        <Col :xs="2" :sm="2" :md="2" :lg="2">
+                                            <h3>全部小题</h3>
+                                        </Col>
+                                        <Col span="22">
+                                            <Card>
+                                                <div v-for="(value,index) in chineseMsg" :key="index" class="div-indent">
+                                                    <Row style="margin-bottom:20px;border:1px solid #EAEAEA;" v-if="value.scope==1||value.scope==2">
+                                                        <Col span="2">
+                                                            <h5 style="display:inline-block;margin-right:10px;">
+                                                                <span style="margin-right:10px;"></span>
+                                                                <span>（{{index+1}}）</span>
+                                                            </h5>
+                                                        </Col>
+                                                        <Col span="22">
+                                                            <p v-html="value.content"></p>
+                                                        </Col>
+                                                        <Col span="21">
+                                                            <Row>
+                                                                <Col span="5" offset="1" v-for="(item,key,num) in JSON.parse(value.selection)" :key="num">
+                                                                    <span class="text-indent">
+                                                                        <span>{{key}}.</span>
+                                                                        <span>{{item}}</span>
+                                                                    </span>
+                                                                </Col>
+                                                            </Row>
+                                                        </Col>
+                                                    </Row>
+                                                    <Row style="margin-bottom:20px;border:1px solid #EAEAEA;" v-else>
+                                                        <Col span="3">
+                                                            <h5 style="display:inline-block;margin-right:10px;">
+                                                                <span style="margin-right:10px;"></span>
+                                                                <span>（{{index+1}}）</span>
+                                                            </h5>
+                                                        </Col>
+                                                        <Col span="21">
+                                                            <p v-html="value.content"></p>
+                                                        </Col>
+                                                    </Row>
+                                                </div>
+                                            </Card>
+                                            <p>
+                                                <span v-for="(value,index) in chineseMsg" :class="['sel-span',{classSel:styleSel==index+1}]" @click.capture.stop="selChinese(value,index)">{{index+1}}</span>
+                                            </p>
+                                        </Col>
+                                        <Col span="22" offset="2" v-if="chineseShow">
+                                            <scope-chinese :importData="selectValue" :importType="selectValueKey" @exportData="exportChineseData"></scope-chinese>
                                         </Col>
                                     </Row>
-                                    <Row>
-                                        <Col :xs="24" :sm="24" :md="24" :lg="24">
-                                            <p v-html="formitem.content" class="text-indent"></p>
-                                        </Col>
-                                    </Row>
-                                </div>
-                                <!-- 单选 -->
-                                <div class="" v-if="formitem.selection==undefined?false:true">
-                                    <div>
-                                        <h3>全部选项</h3>
-                                    </div>
-                                    <!-- {{formitem.selection.A}} -->
-                                    <div v-for="(value, key, index) in formitem.selection" :key="key">
-                                        <Row>
-                                            <Col :xs="24" :sm="24" :md="24" :lg="24">
-                                                <h5>选项{{key}}:</h5>
-                                            </Col>
-                                        </Row>
-                                        <Row>
-                                            <Col :xs="24" :sm="24" :md="24" :lg="24">
-                                                <p v-html="value" class="text-indent"></p>
-                                            </Col>
-                                        </Row>
-                                    </div>
-                                </div>
-                                <!-- 完型填空 -->
-                                <div class="" v-if="formitem.scope==5 && formitem.childSubjects!=undefined">
-                                    <div>
-                                        <h3>全部选项</h3>
-                                    </div>
-                                    <div v-for="(value, index) in formitem.childSubjects" :key="index" v-if="wanxingShow">
-                                        <Row style="margin-bottom:15px;">
-                                            <Col :xs="24" :sm="24" :md="1" :lg="1">
-                                                <span>({{index+1}})</span>
-                                            </Col>
-                                            <Col :xs="24" :sm="24" :md="4" :lg="4" v-for="(item,key,num) in JSON.parse(value.selection)" :key="num">
-                                                <p class="text-indent">
-                                                    <span>{{key}}.</span>
-                                                    <Input :value="item" style="width:80%;" @input="changeItem(value.id,key,value.selection)"></Input>
-                                                </p>
-                                            </Col>
-                                            <Col :xs="24" :sm="24" :md="1" :lg="1">
-                                                <Button type="primary" size="small" @click="sureItem(value.id,value.selection)">确认修改</Button>
-                                            </Col>
-                                        </Row>
-                                    </div>
-                                </div>
-                                <!-- 阅读理解 -->
-                                <div class="" v-if="formitem.scope==6 && formitem.childSubjects!=undefined">
-                                    <div>
-                                        <h3>全部选项</h3>
-                                    </div>
-                                    <div v-for="(value, index) in formitem.childSubjects" :key="index" v-if="yueduShow">
-                                        <Row style="margin-bottom:15px;">
-                                            <Col :xs="1" :sm="1" :md="1" :lg="1">
-                                                <span>({{index+1}})</span>
-                                            </Col>
-                                            <Col :xs="23" :sm="23" :md="23" :lg="23">
-                                                <Input :value="value.content" style="width:80%;" @input="changeValue(value.id,value.content)"></Input>
-                                            </Col>
-                                        </Row>
-                                        <Row style="margin-bottom:15px;" v-if="value.selection">
-                                            <Col :xs="24" :sm="24" :md="24" :lg="24" v-for="(item,key,num) in JSON.parse(value.selection)" :key="num" style="margin-bottom:15px;">
-                                                <p class="text-indent">
-                                                    <span>{{key}}.</span>
-                                                    <Input :value="item" style="width:80%;" @input="changeItem(value.id,key,value.selection)"></Input>
-                                                </p>
-                                            </Col>
-                                            <Col :xs="24" :sm="24" :md="1" :lg="1">
-                                                <Button type="primary" size="small" @click="sureContent(value.id,value.content,value.selection)">确认修改</Button>
-                                            </Col>
-                                        </Row>
-                                    </div>
-                                </div>
-                                <!-- 七选五 -->
-                                <div class="" v-if="formitem.scope==7 && formitem.childSubjects!=undefined">
-                                    <div>
-                                        <h3>全部选项</h3>
-                                    </div>
-                                    <div v-for="(value, index) in formitem.childSubjects" :key="index" v-if="qiwuShow">
-                                        <Row style="margin-bottom:15px;">
-                                            <Col :xs="24" :sm="24" :md="1" :lg="1">
-                                                <span>({{index+1}})</span>
-                                            </Col>
-                                            <Col :xs="24" :sm="24" :md="24" :lg="24" v-for="(item,key,num) in JSON.parse(value.selection)" :key="num" style="margin-bottom:15px;">
-                                                <p class="text-indent">
-                                                    <span>{{key}}.</span>
-                                                    <Input :value="item" style="width:80%;" @input="changeItem(value.id,key,value.selection)"></Input>
-                                                </p>
-                                            </Col>
-                                            <Col :xs="1" :sm="1" :md="1" :lg="1">
-                                                <Button type="primary" size="small" @click="sureContent(value.id,value.content,value.selection)">确认修改</Button>
-                                            </Col>
-                                        </Row>
-                                    </div>
-                                </div>
-                                <!-- 诗歌阅读 -->
-                                <div class="" v-if="formitem.scope==14 && formitem.childSubjects!=undefined">
-                                    <scope-fourteen :importData="formitem.childSubjects" @exportData="scopeFourteen" @sureData="sureScope14" v-if='shigeShow'></scope-fourteen>
-                                </div><!-- 诗歌阅读结束 -->
-                                <div class="" v-if="formitem.selectionKey==undefined?false:true">
-                                    <Row>
-                                        <Col :xs="24" :sm="24" :md="24" :lg="24">
-                                            <h4>正确选项</h4>
-                                        </Col>
-                                    </Row>
-                                    <Row>
-                                        <Col :xs="24" :sm="24" :md="24" :lg="24">
-                                            <p v-html="formitem.selectionKey" class="text-indent"></p>
-                                        </Col>
-                                    </Row>
-                                </div>
+                                </div><!-- 语文题干分离 -->
 
-                                <div class="">
+                                <div class="mgt">
                                     <Row>
-                                        <Col :xs="24" :sm="24" :md="24" :lg="24">
-                                            <h4>答案</h4>
+                                        <Col :xs="2" :sm="2" :md="2" :lg="2">
+                                            <h3>答案</h3>
                                         </Col>
-                                    </Row>
-                                    <Row>
-                                        <Col :xs="24" :sm="24" :md="24" :lg="24">
-                                            <p v-html="formitem.answer"></p>
+                                        <Col span="22">
+                                            <update-ueditor :importData="formitem.answer" :importType="'answer'" :importId="formitem.id"  @exportData="exportAnswerData"></update-ueditor>
                                         </Col>
                                     </Row>
                                 </div>
-                                <div class="">
+                                <div class="mgt">
                                     <Row>
-                                        <Col :xs="24" :sm="24" :md="24" :lg="24">
-                                            <h4>解析</h4>
+                                        <Col :xs="2" :sm="2" :md="2" :lg="2">
+                                            <h3>解析</h3>
                                         </Col>
-                                    </Row>
-                                    <Row>
-                                        <Col :xs="24" :sm="24" :md="24" :lg="24">
-                                            <p v-html="formitem.analysis"></p>
+                                        <Col span="22">
+                                            <update-ueditor :importData="formitem.analysis" :importType="'analysis'" :importId="formitem.id"  @exportData="exportAnalysisData"></update-ueditor>
                                         </Col>
                                     </Row>
                                 </div>
@@ -278,16 +265,10 @@
                         </div>
                         <div class="page-divider page-divider-horizontal"></div>
                         <div style="text-align:center;margin-bottom:15px;">
-                            <Button type="primary"  @click="updata(formitem.id)">修改</Button>
-                            <Button type="default"  @click="submit(formitem.id)" v-if="!deleteShow">正常</Button>
-                            <Button type="primary"  @click="feedback(formitem.id)" v-if="!deleteShow">反馈</Button>
-                            <Button type="error"  @click="remove(formitem.id)" v-if="deleteShow">删除</Button>
+                            <Button type="default"  @click="submit(formitem.id)">提交</Button>
+                            <Button type="primary"  @click="feedback(formitem.id)">反馈</Button>
                         </div>
-                        <!-- <div>
-                            <upload-photo @exportData="exportData"></upload-photo>
-                        </div> -->
                     </Form>
-                    <!-- <img src="@/assets/logo.png" alt=""> -->
                     </div>
                     <div class="mt20">
                         <paging :pageData="pageData" @pageComponentDate="pageComponentDate" v-if="pageshow"></paging>
@@ -301,7 +282,6 @@
     </div>
 </template>
 <script>
-import Pages from '@/components/pub/page.vue'
 import uploadPhoto from '@/components/pub/uploadPhoto.vue'
 import cascader from '@/components/pub/cascader.vue'
 import Course from './pubcourse.vue'
@@ -309,7 +289,13 @@ import getCourseType from './pubcourseType.vue'
 import getCategory from '@/components/pub/getCategory.vue'
 import getDifficulty from '@/components/pub/getDifficulty.vue'
 import getCourceCascader from '@/components/pub/getCourceCascader.vue'
-import scopeFourteen from '@/components/pub/scopeFourteen.vue'
+
+import updateUeditor from '@/components/view/updateUeditor.vue'
+import selectUeditor from '@/components/view/selectUeditor.vue'
+import scopeFss from '@/components/view/scopeFss.vue'
+import scopeChinese from '@/components/view/scopeChinese.vue'
+import Pages from '@/components/view/page.vue'
+import Vue from 'vue'
 
 export default {
     name: 'index',
@@ -322,20 +308,16 @@ export default {
         getDifficulty,
         getCourceCascader,
         cascader,
-        scopeFourteen
+
+        updateUeditor,
+        selectUeditor,
+        scopeFss,
+        scopeChinese
     },
     data () {
         return {
-            baseInfoShow:false,
-            dealerShow:false,
             pageshow:false,
-            iconShow:false,
-            imgShow:false,
-            importShow:false,
-            importEditShow:false,
-            loadingShow:false,
             deleteShow:false,
-            cascaderShow:false,
             formItem: {},
             ruleValidate: {
 
@@ -347,21 +329,6 @@ export default {
                 course:'',
                 status:'1'
             },
-            importCascderData:[],
-            importTypeData:'',
-            importDifficultyData:'',
-            importStatusData:'',
-            importCategoryData:'',
-            jsonValue:{},//存储阅读的选项
-            jsonContent:'',//存储阅读的小题题干
-            stringAnswer:'',//诗歌阅读的小题答案
-            stringAnalysis:'',//诗歌阅读的小题解析
-            wanxingBool:false,//修改阅读内容是否提交
-            wanxingId:0,//修改内容的id
-            wanxingShow:false,//完型选项是否显示
-            yueduShow:false,//阅读选项是否显示
-            qiwuShow:false,//七选五选项是否显示
-            boolOnloading:false,
             // 分页
             pageData:{
                 //分页数
@@ -375,78 +342,46 @@ export default {
                 //总数
                 totalCount:10
             },
-            // scope等于14,诗歌阅读数据
-            shigeShow:false,//诗歌阅读是否显示
-            ScopeFourteenData:{
-                id:0,//选中修改小题的id
-                jsonContent:'',//修改的小题题干
-                stringAnalysis:'',//修改的小题解析
-                stringAnswer:'',//修改的小题答案
-                stringSelectionKey:'',//修改的小题正确选项
-                jsonValue:{},//修改的小题选项
-            }
+            // 修改数据
+            updataDatas:{
+
+            },
+            selectData:{},
+            selectValueKey:'',
+            selectValue:'',
+            selectValueShow:false,
+            selectionMsg:{},
+            // 单多选选项原数据复制
+            selectionMsgCopy:{},
+            // 单多选选项改变数据
+            selectionMsgChange:{},
+            styleSel:'',
+            // 英语题干分离数据
+            yingyuMsg:[],
+            fssShow:false,
+            // 语文题干分离数据
+            chineseMsg:[],
+            chineseShow:false,
+            //编辑单选或者多选操作数据
+            inputShow:false,//是否选择选项key在编辑状态
+            selBottonShow:false,//选项按钮是否在编辑状态
+            selBool:false,//是否修改单选或者多选题
         }
     },
-    beforeRouteEnter(to, from, next) {
-        if (from.name=='pubtopicPreview'&&to.name=='pubtopicList') {
-            to.meta.keepAlive = false;  // 让 列表页 不缓存，即刷新
-            to.meta.boolOnloading = true;
-            next(vm=>{
-                vm.getpage()
-            });
-        }else if (from.name=='pubtopicEdit'&&to.name=='pubtopicList') {
-            to.meta.keepAlive = false;  // 让 列表页 缓存，即不刷新
-            to.meta.boolOnloading = true;
-            next(vm=>{
-                vm.getpage()
-            });
-        }else{
-            to.meta.keepAlive = false;  // 让 列表页 不缓存，即刷新
-            to.meta.boolOnloading = false;
-            next(vm=>{
-                vm.cascaderShow=true;
-                vm.getInfo()
-            })
-        }
-    },
-    // beforeRouteLeave(to,form,next){
-    //     form.meta.boolOnloading = false;
-    //     next();
-    // },
     created() {
 
     },
     mounted(){
-
+        this.getInfo();
     },
     methods: {
-        getpage(){
-            if (this.$webapi.get('pageCurrent')&&this.$webapi.get('pagesize')) {
-                this.pageData.pageCurrent = this.$webapi.get('pageCurrent');
-                this.pageData.pagesize = this.$webapi.get('pagesize');
-            }
-            if (this.$webapi.get('category')) {
-                this.formCustom.category=this.$webapi.get('category')
-            }
-            if (this.$webapi.get('difficulty')) {
-                this.formCustom.difficulty=this.$webapi.get('difficulty')
-            }
-            if (this.$webapi.get('chapterId')) {
-                this.formCustom.chapterId=this.$webapi.get('chapterId')
-            }
-            if (this.$webapi.get('status')) {
-                this.formCustom.status=this.$webapi.get('status')
-            }
-            this.getInfo();
-        },
         getInfo () {
             let _this = this
             this.$Spin.show();
-            this.wanxingShow=false;
-            this.yueduShow=false;
             let datas={
                 page: _this.pageData.pageCurrent,//当前页
-                pageSize: _this.pageData.pagesize,
+                pageSize: 1,
+                status:1
             }
             if(this.$store.state.topic.pubsearch_course.length!=0){
                 var search_course=this.$store.state.topic.pubsearch_course
@@ -475,49 +410,42 @@ export default {
             }else{
                 _this.$webapi.save("chapterId",'');
             }
-            if (this.formCustom.status==-1) {
-                datas.status=this.formCustom.status
-                _this.$webapi.save("status",this.formCustom.status);
-                _this.deleteShow=true;
-            }else{
-                _this.$webapi.save("status",this.formCustom.status);
-                _this.deleteShow=false;
-            }
             this.$api.get("/admin/api/source/subject/list", datas, reset => {
                 if (reset.code === 200) {
                     _this.$Spin.hide();
+                    _this.$store.commit("ueType",'')
                     if(reset.data.records){
                         _this.formItem=reset.data.records;
                         for (var i = 0; i < _this.formItem.length; i++) {
-                            if (_this.formItem[i].selection) {
-                                _this.formItem[i].selection=JSON.parse(_this.formItem[i].selection)
+                            if(_this.formItem[i].scope==1 || _this.formItem[i].scope==2){
+                                if (_this.formItem[i].selection) {
+                                    _this.selectionMsg=JSON.parse(_this.formItem[i].selection)
+                                    _this.selectionMsgCopy={..._this.selectionMsg}
+                                }else{
+                                    _this.selectionMsg={}
+                                    _this.selectionMsgCopy={}
+                                }
                             }
-                            if(_this.formItem[i].scope==5 && _this.formItem[i].childSubjects!=undefined){
-                                _this.wanxingShow=true
+                            if((_this.formItem[i].scope==5 || _this.formItem[i].scope==6 || _this.formItem[i].scope==7 )&& _this.formItem[i].childSubjects!=undefined){
+                                _this.yingyuMsg=_this.formItem[i].childSubjects
                             }
-                            if(_this.formItem[i].scope==6 && _this.formItem[i].childSubjects!=undefined){
-                                _this.yueduShow=true
-                            }
-                            if(_this.formItem[i].scope==7 && _this.formItem[i].childSubjects!=undefined){
-                                _this.qiwuShow=true
-                            }
-                            if(_this.formItem[i].scope==14 && _this.formItem[i].childSubjects!=undefined){
-                                _this.shigeShow=true
+                            if((_this.formItem[i].scope==12 ||_this.formItem[i].scope==13||_this.formItem[i].scope==14) && _this.formItem[i].childSubjects!=undefined){
+                                _this.chineseMsg=_this.formItem[i].childSubjects
                             }
                         }
-
-                        _this.$webapi.save("pageCurrent",reset.data.current);
-                        _this.$webapi.save("pagesize",reset.data.size);
-                        // _this.$webapi.savelocal("topicItem",topicItem);
                         _this.pageData.pagesize = reset.data.size
                         _this.pageData.totalCount = reset.data.total
                         _this.pageData.pageCount = reset.data.pages
                         _this.pageData.pageCurrent = reset.data.current
 
                         _this.pageshow =  true
+                        this.chineseShow=false
+                        this.styleSel='';
+                        this.fssShow=false;
+                        this.selBool=false;
                     }else{
                         _this.formItem=[]
-                        _this.$Message.error("暂无数据!")
+                        _this.$Message.success("暂无数据!")
                     }
 
                 }else {
@@ -525,10 +453,6 @@ export default {
                     this.$Spin.hide();
                 }
             })
-            // setTimeout(() => {
-            //     this.$Message.success("请求失败,请重试!");
-            //     this.$Spin.hide();
-            // }, 8000);
         },
         pageComponentDate (e) {
             this.pageData.pageCurrent = e.pageCurrent
@@ -536,11 +460,6 @@ export default {
             this.$webapi.save("pageCurrent",e.pageCurrent);
             this.$webapi.save("pagesize",e.pagesize);
             this.getInfo()
-        },
-        updata(e){
-            this.$router.push({
-                path:'/pubtopic/edit/'+e
-            })
         },
         feedback(e){
             let _this = this
@@ -550,6 +469,9 @@ export default {
             this.$api.post("/admin/api/source/subject/feedback", datas, reset => {
                 if (reset.code === 200) {
                     _this.$Message.success("反馈成功!");
+                    if (_this.pageData.pageCurrent!=1) {
+                        _this.pageData.pageCurrent=_this.pageData.pageCurrent-1
+                    }
                     _this.getInfo();
                 }else {
                     _this.$netcode.getApiCode(reset)
@@ -568,6 +490,9 @@ export default {
                     this.$api.post("/admin/api/source/subject/submit", data, reset => {
                         if (reset.code === 200) {
                             _this.$Message.success("提交成功!")
+                            if (_this.pageData.pageCurrent!=1) {
+                                _this.pageData.pageCurrent=_this.pageData.pageCurrent-1
+                            }
                             _this.getInfo();
                         }else {
                             _this.$netcode.getApiCode(reset)
@@ -602,176 +527,179 @@ export default {
         exportDifficultyData(e){
             this.formCustom.difficulty=e;
         },
-        // changeAnalysis(id,value){
-        //     if(this.wanxingId==0){
-        //         this.wanxingId=id;
-        //         this.stringAnalysis=event.target.value;
-        //     }else if (this.wanxingId==id) {
-        //         this.stringAnalysis=event.target.value;
-        //     }else {
-        //         this.$Message.error("请先提交已修改选项,再修改其他选项!")
-        //     }
-        // },
-        // changeAnswer(id,value){
-        //     if(this.wanxingId==0){
-        //         this.wanxingId=id;
-        //         this.stringAnswer=event.target.value;
-        //     }else if (this.wanxingId==id) {
-        //         this.stringAnswer=event.target.value;
-        //     }else {
-        //         this.$Message.error("请先提交已修改选项,再修改其他选项!")
-        //     }
-        // },
-        changeValue(id,value){
-            if(this.wanxingId==0){
-                this.wanxingId=id;
-                this.jsonContent=event.target.value;
-            }else if (this.wanxingId==id) {
-                this.jsonContent=event.target.value;
-            }else {
-                this.$Message.error("请先提交已修改选项,再修改其他选项!")
-            }
-        },
-        changeItem(id,key,value){
-            if(this.wanxingId==0){
-                this.jsonValue=JSON.parse(value);
-                this.jsonValue[key]=event.target.value;
-                this.wanxingBool=false;
-                this.wanxingId=id;
-            }else if(this.wanxingId==id){
-                if (Object.keys(this.jsonValue).length==0) {
-                    this.jsonValue=JSON.parse(value);
-                }
-                this.jsonValue[key]=event.target.value;
-            }else {
-                this.$Message.error("请先提交已修改选项,再修改其他选项!")
-            }
-        },
-        sureItem(id,value){
-            let _this = this
-            if(_this.wanxingId!=0 && _this.wanxingId!=id){
-                this.$Message.error("请先提交修改选项,再修改其他选项!")
+        // 修改数据请求
+        post(e){
+            var _this=this;
+            var datas={};
+            datas.id=e.id
+            if(this.selBool){
+                datas.selection=JSON.stringify(this.selectionMsg)
             }else{
-                if(Object.keys(this.jsonValue).length==0){
-                    this.jsonValue=JSON.parse(value);
-                }
-                let datas={
-                    id: id,
-                    selection:JSON.stringify(this.jsonValue)
-                }
-                if(this.stringAnswer){
-                    datas.stringAnswer=this.stringAnswer
-                }
-                if(this.stringAnalysis){
-                    datas.stringAnalysis=this.stringAnalysis
-                }
-                this.$api.post("/admin/api/source/subject/update", datas, reset => {
-                    if (reset.code === 200) {
-                        _this.$Message.success("修改成功!");
-                        _this.jsonValue={}
-                        _this.stringAnswer=''
-                        _this.stringAnalysis=''
-                        _this.jsonValue={}
-                        _this.wanxingId=0;
-                        _this.getInfo();
-                    }else {
-                        _this.$netcode.getApiCode(reset)
-                    }
-                })
+                datas=e
             }
-        },
-        remove (params) {
-            let _this = this
-            this.$Modal.confirm({
-                title: '提示',
-                content: '<p>确认要删除吗?</p>',
-                onOk: () => {
-                    _this.itemdel(params)
-                },
-                onCancel: () => {
-
-                }
-            });
-
-        },
-        itemdel (params) {
-            let _this = this
-            var data={
-                id:params
-            }
-            this.$api.post("/admin/api/source/subject/delete", data, reset => {
+            this.$api.post("/admin/api/source/subject/update", datas, reset => {
                 if (reset.code === 200) {
-                    _this.$Message.success("删除成功!")
-                    _this.getInfo();
+                    // _this.$Message.success("修改成功!");
+                    _this.updataDatas={}
+                    _this.selBool=false
                 }else {
                     _this.$netcode.getApiCode(reset)
                 }
             })
         },
-        sureContent(id,content,value){
-            let _this = this
-            if(_this.wanxingId!=0 && _this.wanxingId!=id){
-                this.$Message.error("请先提交修改选项,再修改其他选项!")
+        // 修改
+        exportQuestionData(e){
+            this.updataDatas.id=e.id
+            if(e.data){
+                this.updataDatas.question=e.data
+                this.post(this.updataDatas)
+            }
+        },
+        exportContentData(e){
+            this.updataDatas.id=e.id
+            if(e.data){
+                this.updataDatas.content=e.data
+                this.post(this.updataDatas)
+            }
+        },
+        exportSelectionKeyData(e){
+            this.updataDatas.id=e.id
+            if(e.data){
+                this.updataDatas.selectionKey=e.data
+                this.post(this.updataDatas)
+            }
+        },
+        exportAnswerData(e){
+            this.updataDatas.id=e.id
+            if(e.data){
+                this.updataDatas.answer=e.data
+                this.post(this.updataDatas)
+            }
+        },
+        exportAnalysisData(e){
+            this.updataDatas.id=e.id
+            if(e.data){
+                this.updataDatas.analysis=e.data
+                this.post(this.updataDatas)
+            }
+        },
+        exportSelectionData(e){
+            this.styleSel='';
+            this.selBool=true;
+            this.updataDatas.id=e.id
+            if (e.data) {
+                this.selectionMsg[e.key]=e.data
+                this.post(this.updataDatas)
+            }
+            this.selectValueShow=e.show;
+        },
+        selQuestion(val,key){
+            if (this.inputShow) {
+                this.$Message.warning({
+                    content:"选项正在编辑中,暂不能编辑选项值!",
+                    duration: 2.5
+                })
             }else{
-                if(Object.keys(this.jsonValue).length==0){
-                    this.jsonValue=JSON.parse(value);
+                if(!this.$store.state.common.ueType){
+                    this.styleSel=key;
+                    this.selectValue=val;
+                    this.selectValueKey='select'+key;
+                    this.$store.commit("ueType",this.selectValueKey)
+                    this.selectValueShow=true;
                 }
-                let datas={
-                    id: id,
-                    selection:JSON.stringify(this.jsonValue)
-                }
-                if(!this.jsonContent){
-                    datas.content=content;
-                }else{
-                    datas.content=this.jsonContent;
-                }
-                this.$api.post("/admin/api/source/subject/update", datas, reset => {
-                    if (reset.code === 200) {
-                        _this.$Message.success("修改成功!");
-                        _this.jsonValue={}
-                        _this.wanxingId=0;
-                        _this.jsonContent='';
-                        _this.getInfo();
-                    }else {
-                        _this.$netcode.getApiCode(reset)
-                    }
+            }
+        },
+        selFss(val,key){
+            if(!this.$store.state.common.ueType){
+                this.styleSel=key+1;
+                this.selectValue=val;
+                this.selectValueKey='select'+key+1;
+                this.fssShow=true;
+            }
+        },
+        selChinese(val,key){
+            if(!this.$store.state.common.ueType){
+                this.styleSel=key+1;
+                this.selectValue=val;
+                this.selectValueKey='chinese'+key+1;
+                this.$nextTick(function () {
+                    this.chineseShow=true; // => '更新完成'
                 })
             }
         },
-        // scope等于14,诗歌阅读的修改
-        scopeFourteen(e){
-            this.ScopeFourteenData=e
-        },
-        sureScope14(e){
-            var _this=this;
-            if(e){
-                let datas={
-                    id: this.ScopeFourteenData.id,
-                }
-                if(Object.keys(this.ScopeFourteenData.jsonValue).length!=0){
-                    datas.selection=JSON.stringify(this.ScopeFourteenData.jsonValue);
-                }
-                if(this.ScopeFourteenData.jsonContent){
-                    datas.content=this.ScopeFourteenData.jsonContent;
-                }
-                if(this.ScopeFourteenData.stringAnalysis){
-                    datas.analysis=this.ScopeFourteenData.stringAnalysis;
-                }
-                if(this.ScopeFourteenData.stringAnswer){
-                    datas.answer=this.ScopeFourteenData.stringAnswer;
-                }
-                if(this.ScopeFourteenData.stringSelectionKey){
-                    datas.selectionKey=this.ScopeFourteenData.stringSelectionKey;
-                }
-                this.$api.post("/admin/api/source/subject/update", datas, reset => {
+        exportFssData(e){
+            if(e.data){
+                this.$api.post("/admin/api/source/subject/update",e.data, reset => {
                     if (reset.code === 200) {
-                        _this.$Message.success("修改成功!");
-                        _this.shigeShow=false;
-                        _this.getInfo();
+                        this.$Message.success("修改成功!");
+                        this.$store.commit("ueType",'')
+                        this.styleSel='';
+                        this.fssShow=false;
+                        this.getInfo();
                     }else {
-                        _this.$netcode.getApiCode(reset)
+                        this.$netcode.getApiCode(reset)
                     }
                 })
+            }else{
+                this.styleSel='';
+                this.fssShow=false;
+            }
+        },
+        exportChineseData(e){
+            this.styleSel='';
+            this.chineseShow=e.show;
+            if (e.data) {
+                this.getInfo();
+            }
+        },
+        // 单选或者多选题,增加选项
+        editor(){
+            this.inputShow=true;
+            this.selBottonShow=true;
+        },
+        editorSure(){
+            if (Object.keys(this.selectionMsg).length==0) {
+                this.selectionMsg={...this.selectionMsgCopy}
+            }
+            if (this.selectionMsg==this.selectionMsgCopy) {
+                this.selBool=false;
+            }else{
+                this.selBool=true;
+            }
+            this.inputShow=false;
+            this.selBottonShow=false;
+        },
+        editorRemove(){
+            this.selectionMsg={...this.selectionMsgCopy}
+            this.inputShow=false;
+            this.selBottonShow=false;
+        },
+        addIcon(){
+            Vue.set(this.selectionMsg,"选项号"+new Date().getTime(),"暂无添加选项值")
+        },
+        removeIcon(key){
+            this.inputShow=false;
+            delete this.selectionMsg[key];
+            var _this=this
+            setTimeout(function(){
+                _this.inputShow=true;
+            },50)
+        },
+        changeCon(num,key){
+            if (key) {
+                var arrValue=[]
+                var obj={}
+                for(let i in this.selectionMsg){
+                    arrValue.push(this.selectionMsg[i])
+                }
+                var arrKey = Object.keys(this.selectionMsg);
+                arrKey.splice(num,1,key)
+                for (var i = 0; i < arrKey.length; i++) {
+                    obj[arrKey[i]]=arrValue[i];
+                }
+                this.selectionMsg=obj
+            }else{
+                this.$Message.error("选项格式不正确!")
             }
         }
     }
@@ -781,14 +709,23 @@ export default {
     .ivu-form-item{
         margin-bottom: 0px;
     }
-    // .text-indents{
-        // text-indent:36px;
-    // }
     .span-interval{
         margin-right: 10px;
     }
     .form-border{
         border: 1px solid #dedede;
         margin-bottom:15px;
+    }
+    .mgt{
+        margin-top: 15px;
+    }
+    .sel-span{
+        padding:3px 5px;
+        background-color: #DDDDDD;
+        border:1px solid #E4E4E4;
+        cursor: pointer;
+    }
+    .classSel{
+        background-color: #0192FF;
     }
 </style>

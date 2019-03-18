@@ -1,6 +1,6 @@
 <template>
   <div class="">
-    <Select v-model="valueId" :disabled="bool" clearable placeholder="请先选教材版本,再选择教材">
+    <Select v-model="valueId" :disabled="bool" clearable placeholder="请先选教材版本,再选择教材"  @on-change="change">
         <Option v-for="item in alldata" :value="item.id" :key="item.id" @click.native="getMoreParams(item)">{{item.name}}</Option>
     </Select>
   </div>
@@ -18,18 +18,42 @@ export default {
         }
     },
     computed:{
-        ...mapGetters({alldata:'textDatas'}),
-        valueId:{
+        // ...mapGetters({alldata:'textDatas'}),
+        alldata:{
             get () {
-                if(this.$store.state.entertest.textbookVersion){
-                    this.bool=false;
+                if(this.importData){
+                    if(this.$webapi.get("enterTextbook")){
+                        return JSON.parse(this.$webapi.get("enterTextbook"))
+                    }else{
+                        return this.$store.state.entertest.textDatas
+                    }
                 }else{
-                    this.bool=true;
+                    return this.$store.state.entertest.textDatas
                 }
-                return this.$store.state.entertest.textbook
             },
             set (val) {
-
+            }
+        },
+        valueId:{
+            get () {
+                if(this.importData){
+                    if(this.$store.state.entertest.textbookVersion){
+                        this.bool=false;
+                        this.$store.commit('textbookIdEnter',this.importData)
+                        this.$store.dispatch('chapterDatasEnter',this.importData)
+                        return this.importData
+                    }else{
+                        this.bool=true;
+                    }
+                }else{
+                    if(this.$store.state.entertest.textbookVersion){
+                        this.bool=false;
+                        return this.$store.state.entertest.textbook
+                    }
+                }
+            },
+            set (val) {
+                // console.log(val);
             }
         }
     },
@@ -40,11 +64,17 @@ export default {
         // console.log(this.$store.state.textVersionDatas);
     },
     methods: {
+        change(e){
+            if(!e){
+                this.$emit('exportData','')
+                this.$store.dispatch('textbookEnter','')
+            }
+        },
         getMoreParams(e){
             this.$emit('exportData',e.id)
             this.$store.dispatch('textbookEnter',e)
             this.$store.dispatch('chapterDatasEnter',e.id)
-        }
+        },
     }
 }
 </script>

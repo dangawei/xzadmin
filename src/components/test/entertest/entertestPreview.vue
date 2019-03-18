@@ -24,16 +24,6 @@
                 <div class="tableListOperator" style="margin-bottom: 0px;">
                     <!-- <Button type="primary" size="large" @click="add()">添加</Button> -->
                 </div>
-                <!-- <div class="page-view allm20">
-                    <div class="page-view-body">
-                        <Row>
-                            <Col :xs="24" :sm="24" :md="{ span: 20, offset: 2 }" :lg="{ span: 20, offset: 2 }">
-                                <Table border :columns="columns" :data="data" :show-header="false"></Table>
-                            </Col>
-                        </Row>
-
-                    </div>
-                </div> -->
                 <div class="page-view allm20">
                     <div class="page-view-body">
                         <Form :model="formItem" label-position="left" class="form-border">
@@ -62,6 +52,11 @@
                                             </FormItem>
                                         </Col>
                                         <Col :xs="24" :sm="8" :md="6" :lg="6">
+                                            <FormItem label="题型:" prop="type">
+                                                <p>{{formItem.type}}</p>
+                                            </FormItem>
+                                        </Col>
+                                        <Col :xs="24" :sm="8" :md="6" :lg="6">
                                             <FormItem label="难度:" prop="difficulty">
                                                 <p>{{formItem.difficulty}}</p>
                                             </FormItem>
@@ -73,76 +68,98 @@
                                         </Col>
                                         <Col :xs="24" :sm="24" :md="24" :lg="24">
                                             <FormItem label="章节:" prop="chapter">
-                                                <p>{{formItem.chapter}}</p>
+                                                <p>{{formItem.chapters}}</p>
                                             </FormItem>
                                         </Col>
                                         <Col :xs="24" :sm="24" :md="24" :lg="24">
-                                            <FormItem label="知识点:" prop="knowledge">
-                                                <p>{{formItem.knowledge}}</p>
+                                            <FormItem label="知识点:" prop="knowledgeList">
+                                                <span v-for="item in formItem.knowledgeList" class="span-interval">{{item}}</span>
                                             </FormItem>
                                         </Col>
                                     </Row>
                                 </div>
                                 <div class="page-divider page-divider-horizontal"></div>
-                                <div class="">
-                                    <Row>
-                                        <Col :xs="24" :sm="24" :md="24" :lg="24">
-                                            <h4>题干</h4>
-                                        </Col>
-                                    </Row>
-                                    <Row>
-                                        <Col :xs="24" :sm="24" :md="24" :lg="24">
-                                            <p v-html="formItem.content"></p>
-                                        </Col>
-                                    </Row>
-                                </div>
-                                <div class="" v-if="formItem.selection">
-                                    <Row>
-                                        <Col :xs="24" :sm="24" :md="24" :lg="24">
-                                            <h4>选项</h4>
-                                        </Col>
-                                    </Row>
-                                    <Row>
-                                        <Col :xs="24" :sm="24" :md="24" :lg="24">
-                                            <p v-html="formItem.selection"></p>
-                                        </Col>
-                                    </Row>
-                                </div>
-                                <div class="" v-if="formItem.item">
-                                    <Row>
-                                        <Col :xs="24" :sm="24" :md="24" :lg="24">
-                                            <h4>小题</h4>
-                                        </Col>
-                                    </Row>
-                                    <Row>
-                                        <Col :xs="24" :sm="24" :md="24" :lg="24">
-                                            <p v-html="formItem.item"></p>
-                                        </Col>
-                                    </Row>
-                                </div>
-                                <div class="">
-                                    <Row>
-                                        <Col :xs="24" :sm="24" :md="24" :lg="24">
-                                            <h4>答案</h4>
-                                        </Col>
-                                    </Row>
-                                    <Row>
-                                        <Col :xs="24" :sm="24" :md="24" :lg="24">
-                                            <p v-html="formItem.answer"></p>
-                                        </Col>
-                                    </Row>
-                                </div>
-                                <div class="">
-                                    <Row>
-                                        <Col :xs="24" :sm="24" :md="24" :lg="24">
-                                            <h4>解析</h4>
-                                        </Col>
-                                    </Row>
-                                    <Row>
-                                        <Col :xs="24" :sm="24" :md="24" :lg="24">
-                                            <p v-html="formItem.analysis"></p>
-                                        </Col>
-                                    </Row>
+                            </div>
+                            <div class="pagelist">
+                                <div class="pagelist-hd">题干信息</div>
+                                <div class="pagelist-bd">
+                                    <div class="">
+                                        <Row>
+                                            <Col :xs="24" :sm="24" :md="24" :lg="24">
+                                                <h4>题目</h4>
+                                            </Col>
+                                        </Row>
+                                        <Row>
+                                            <Col :xs="24" :sm="24" :md="24" :lg="24">
+                                                <p v-html="formItem.question" class="text-indent"></p>
+                                            </Col>
+                                        </Row>
+                                    </div>
+                                    <div class="">
+                                        <Row>
+                                            <Col :xs="24" :sm="24" :md="24" :lg="24">
+                                                <h4>题干</h4>
+                                            </Col>
+                                        </Row>
+                                        <Row>
+                                            <Col :xs="24" :sm="24" :md="24" :lg="24">
+                                                <p v-html="formItem.content" class="text-indent"></p>
+                                            </Col>
+                                        </Row>
+                                    </div>
+                                    <div class="" v-if="this.$route.query.sel">
+                                        <div>
+                                            <h3>全部选项</h3>
+                                        </div>
+                                        <div v-for="(value, key, index) in selctions" :key="key">
+                                            <Row>
+                                                <Col :xs="24" :sm="24" :md="24" :lg="24">
+                                                    <h5>选项{{key}}:</h5>
+                                                </Col>
+                                            </Row>
+                                            <Row>
+                                                <Col :xs="24" :sm="24" :md="24" :lg="24">
+                                                    <p v-html="value" class="text-indent"></p>
+                                                </Col>
+                                            </Row>
+                                        </div>
+                                    </div>
+                                    <!-- <div class="" v-if="this.$route.query.sel">
+                                        <Row>
+                                            <Col :xs="24" :sm="24" :md="24" :lg="24">
+                                                <h4>正确选项</h4>
+                                            </Col>
+                                        </Row>
+                                        <Row>
+                                            <Col :xs="24" :sm="24" :md="24" :lg="24">
+                                                <p v-html="formItem.selectionKey" class="text-indent" ref="selectionKey"></p>
+                                            </Col>
+                                        </Row>
+                                    </div> -->
+                                    <div class="">
+                                        <Row>
+                                            <Col :xs="24" :sm="24" :md="24" :lg="24">
+                                                <h4>答案</h4>
+                                            </Col>
+                                        </Row>
+                                        <Row>
+                                            <Col :xs="24" :sm="24" :md="24" :lg="24">
+                                                <p v-html="formItem.answer" ref="answer"></p>
+                                            </Col>
+                                        </Row>
+                                    </div>
+                                    <div class="">
+                                        <Row>
+                                            <Col :xs="24" :sm="24" :md="24" :lg="24">
+                                                <h4>解析</h4>
+                                            </Col>
+                                        </Row>
+                                        <Row>
+                                            <Col :xs="24" :sm="24" :md="24" :lg="24">
+                                                <p v-html="formItem.analysis"></p>
+                                            </Col>
+                                        </Row>
+                                    </div>
                                 </div>
                             </div>
                         </Form>
@@ -151,9 +168,9 @@
                 <div class="page-divider page-divider-horizontal"></div>
             </div>
             <div style="text-align:center;margin-bottom:15px;">
-                <Button type="primary" size="large" @click="edit">修改</Button>
-                <Button type="default" size="large" @click="add">上架</Button>
-                <Button type="error" size="large" @click="del">下架</Button>
+                <Button type="primary" size="large" @click="add">保存</Button>
+                <Button type="default" size="large" @click="back">返回</Button>
+                <!-- <Button type="error" size="large" @click="del">下架</Button> -->
             </div>
         </div>
     </div>
@@ -178,25 +195,34 @@
                     answer:'',
                     analysis:'',
                 },
+                selctions:{}
             }
         },
         mounted(){
-            // console.log(this.$store.state.entertest.difficultyText)
-            this.formItem.course=this.$store.state.entertest.courseText;//科目
-            this.formItem.grade=this.$store.state.entertest.gradeText;//年级
-            this.formItem.textbook=this.$store.state.entertest.textbookText;//教材
-            this.formItem.textbookVersion=this.$store.state.entertest.textbookVersionText;//教材版本
-            this.formItem.type=this.$store.state.entertest.typeText;//题型
-            this.formItem.chapter=this.$store.state.entertest.chapterText;//章节id
-            this.formItem.knowledge=this.$store.state.entertest.knowledge;//知识点
-            this.formItem.difficulty=this.$store.state.entertest.difficultyText;//难度
-            this.formItem.source=this.$store.state.entertest.source;//来源
-            this.formItem.assistants=this.$store.state.entertest.assistants;//教辅
-            this.formItem.content=this.$store.state.entertest.content;//题干
-            this.formItem.selection=this.$store.state.entertest.selection;//选项
-            this.formItem.item=this.$store.state.entertest.item;//小题
-            this.formItem.answer=this.$store.state.entertest.answer;//答案
-            this.formItem.analysis=this.$store.state.entertest.analysis;//解析
+            this.formItem=this.$store.state.entertest.enter_datas;//科目
+            if(this.$route.query.sel){
+                if(this.$store.state.entertest.seletionDatas){
+                    // this.selctions=JSON.parse(this.formItem.selection)
+                    this.selctions=JSON.parse(this.$store.state.entertest.seletionDatas)
+                }else{
+                    this.selctions=JSON.parse(this.formItem.selection)
+                }
+            }
+            this.enterArray=JSON.parse(this.$webapi.get('importTestDatas'))
+            // this.formItem.grade=this.formItem.gradeText;//年级
+            // this.formItem.textbook=this.formItem.textbookText;//教材
+            // this.formItem.textbookVersion=this.formItem.textbookVersionText;//教材版本
+            // this.formItem.type=this.formItem.typeText;//题型
+            // this.formItem.chapter=this.formItem.chapterText;//章节id
+            // this.formItem.knowledge=this.formItem.knowledge;//知识点
+            // this.formItem.difficulty=this.formItem.difficultyText;//难度
+            // this.formItem.source=this.formItem.source;//来源
+            // this.formItem.assistants=this.formItem.assistants;//教辅
+            // this.formItem.content=this.formItem.content;//题干
+            // this.formItem.selection=this.formItem.selection;//选项
+            // this.formItem.item=this.formItem.item;//小题
+            // this.formItem.answer=this.formItem.answer;//答案
+            // this.formItem.analysis=this.formItem.analysis;//解析
         },
         methods:{
             edit(){
@@ -205,10 +231,85 @@
                 })
             },
             add(){
-                this.$Message.success("上架成功");
+                let _this = this
+                let datas={
+                    id: this.$route.query.id,//当前页
+                    // scope: this.formItem.scope,//题型
+                }
+                if(this.$store.state.entertest.gradeSel){
+                    datas.gradeId=this.formItem.grade
+                }
+                if(this.$store.state.entertest.courseSel){
+                    datas.courseId=this.formItem.course
+                }
+                if(this.$store.state.entertest.textbookSel){
+                    datas.textbookId=this.formItem.textbook
+                }
+                if(this.$store.state.entertest.gradeSel){
+                    datas.editionId=this.formItem.grade
+                }
+                if(this.$store.state.entertest.difficultySel){
+                    datas.difficultyId=this.formItem.difficulty
+                }
+                if(this.$store.state.entertest.knowledgeSel){
+                    datas.knowledges=this.formItem.knowledge
+                }
+                if(this.$store.state.entertest.chapterSel){
+                    datas.chapters=this.formItem.chapterText
+                }
+                if(this.$store.state.entertest.typeSel){
+                    datas.typeId=this.formItem.type
+                }
+                if(this.$store.state.entertest.questionSel){
+                    datas.question=this.formItem.question
+                }
+                if(this.$store.state.entertest.contentSel){
+                    datas.content=this.formItem.content
+                }
+                if(this.$store.state.entertest.selectionSel){
+                    datas.selection=this.$store.state.entertest.seletionDatas
+                }
+                // if(this.$store.state.entertest.selectionKeySel){
+                //     var e=this.$refs.selectionKey
+                //     datas.selectionKey=e.textContent
+                // }
+                if(this.$store.state.entertest.answerSel){
+                    if (this.formItem.scope==1||this.formItem.scope==2) {
+                        var e=this.$refs.answer
+                        datas.answer=e.textContent
+                    }else{
+                        datas.answer=this.formItem.answer
+                    }
+                }
+                if(this.$store.state.entertest.analysisSel){
+                    datas.analysis=this.formItem.analysis
+                }
+                if(this.$store.state.entertest.assistantsSel){
+                    datas.bookName=this.formItem.assistants
+                }
+                if(this.$store.state.entertest.sourceSel){
+                    datas.source=this.formItem.source
+                }
+                this.$api.post("/admin/api/input/modify", datas, reset => {
+                    if (reset.code === 200) {
+                        _this.$Message.success("修改成功!");
+                        _this.$router.push({
+                            path:'/enter/test/list',
+                            query:{
+                                id:_this.$route.query.id
+                            }
+                        })
+
+                    }else {
+                        _this.$netcode.getApiCode(reset)
+                    }
+                })
             },
             del(){
                 this.$Message.success("下架成功");
+            },
+            back(){
+                this.$router.back(-1)
             }
         }
     }

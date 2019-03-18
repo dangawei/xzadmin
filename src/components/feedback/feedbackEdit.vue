@@ -357,7 +357,7 @@ export default {
             let _this = this
             _this.$Spin.show();
             let datas={
-                id:this.$route.params.id
+                uid:this.$route.params.id
             }
             this.$api.get("/admin/api/feedback/subject/detail", datas, reset => {
                 if (reset.code === 200) {

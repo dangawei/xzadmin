@@ -5,14 +5,14 @@
 	</div>
 </template>
 <script>
+	import '../../../static/UEditor/ueditor.config.js'
+	import '../../../static/UEditor/ueditor.all.js'
+	import '../../../static/UEditor/lang/zh-cn/zh-cn'
+	//引入公式插件
+	import '../../../static/ueditor/kityformula-plugin/addKityFormulaDialog.js'
+	import '../../../static/ueditor/kityformula-plugin/getKfContent.js'
+	import '../../../static/ueditor/kityformula-plugin/defaultFilterFix.js'
 	const UE = require('UE');
-	// import '../../../static/ueditor/ueditor.config.js'
-	// import '../../../static/ueditor/ueditor.all.js'
-	// import '../../../static/ueditor/lang/zh-cn/zh-cn.js'
-	// // //引入公式插件
-	// import '../../../static/ueditor/kityformula-plugin/addKityFormulaDialog.js'
-	// import '../../../static/ueditor/kityformula-plugin/getKfContent.js'
-	// import '../../../static/ueditor/kityformula-plugin/defaultFilterFix.js'
 	export default {
 		name: "UEditor",
 		props: {

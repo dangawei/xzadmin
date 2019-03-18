@@ -21,16 +21,16 @@ export default {
     },
     computed:{
         alldata:function(){
-            return this.$topic.state.courseArray
+            return this.$store.state.topic.courseArray
         },
     },
     watch:{
 
     },
     created(){
-        if(this.$topic.state.courseArray.length==0){
-            this.$topic.dispatch("courseArrayChange")
-        }
+        // if(this.$store.state.topic.courseArray.length==0){
+        //     this.$store.dispatch("courseArrayChange")
+        // }
     },
     mounted() {
         // this.list();

@@ -21,7 +21,12 @@ export default {
         },
         valueId:{
             get () {
-                return this.$store.state.entertest.difficulty
+                if(this.importData){
+                    this.$store.commit('difficultyIdEnter',this.importData)
+                    return this.importData
+                }else{
+                    return this.$store.state.entertest.difficulty
+                }
             },
             set (val) {
                 // this.formValidate.course=val

@@ -169,12 +169,6 @@
                     <!-- <img src="@/assets/logo.png" alt=""> -->
                     </div>
                 </div>
-                <!-- <Row>
-                    <Col :xs="24" :sm="24" :md="24" :lg="24">
-                        <vue-ueditor-wrap v-model="msg" :config="myConfig"></vue-ueditor-wrap>
-                        <Ueditor :writeMsg="msg"  :id="ueditor1" :config="myConfig"  ref="ue" ></Ueditor>
-                    </Col>
-                </Row> -->
             </div>
         </div>
     </div>
@@ -184,14 +178,12 @@ import Vue from 'vue'
 import Pages from '@/components/pub/page.vue'
 import uploadPhoto from '@/components/pub/uploadPhoto.vue'
 import Ueditor from '@/components/pub/Ueditor.vue';
-import Ue from '../../pub/UE.vue'
 export default {
     name: 'index',
     components: {
         Paging:Pages,
         uploadPhoto,
         Ueditor,
-        Ue
     },
     data () {
         return {

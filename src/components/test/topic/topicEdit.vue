@@ -185,12 +185,6 @@
                     <!-- <img src="@/assets/logo.png" alt=""> -->
                     </div>
                 </div>
-                <!-- <Row>
-                    <Col :xs="24" :sm="24" :md="24" :lg="24">
-                        <vue-ueditor-wrap v-model="msg" :config="myConfig"></vue-ueditor-wrap>
-                        <Ueditor :writeMsg="msg"  :id="ueditor1" :config="myConfig"  ref="ue" ></Ueditor>
-                    </Col>
-                </Row> -->
             </div>
         </div>
     </div>
